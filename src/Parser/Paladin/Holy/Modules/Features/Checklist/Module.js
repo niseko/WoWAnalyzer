@@ -9,6 +9,7 @@ import LegendaryUpgradeChecker from 'Parser/Core/Modules/Items/LegendaryUpgradeC
 import LegendaryCountChecker from 'Parser/Core/Modules/Items/LegendaryCountChecker';
 import PrePotion from 'Parser/Core/Modules/Items/PrePotion';
 import EnchantChecker from 'Parser/Core/Modules/Items/EnchantChecker';
+import GemChecker from 'Parser/Core/Modules/Items/GemChecker';
 
 import MasteryEffectiveness from '../MasteryEffectiveness';
 import AlwaysBeCasting from '../AlwaysBeCasting';
@@ -35,6 +36,7 @@ class Checklist extends Analyzer {
     prePotion: PrePotion,
     overhealing: Overhealing,
     enchantChecker: EnchantChecker,
+    gemChecker: GemChecker,
   };
 
   render() {
@@ -82,6 +84,18 @@ class Checklist extends Analyzer {
             actual: this.enchantChecker.numEnchantableGear - this.enchantChecker.numSlotsMissingEnchant - this.enchantChecker.numSlotsMissingMaxEnchant,
             max: this.enchantChecker.numEnchantableGear,
             isLessThan: this.enchantChecker.numEnchantableGear,
+            style: 'number',
+          },
+          itemsGemmed: {
+            actual: this.gemChecker.numGemableGear - this.gemChecker.numSlotsMissingGem,
+            max: this.gemChecker.numGemableGear,
+            isLessThan: this.gemChecker.numGemableGear,
+            style: 'number',
+          },
+          itemsBestGemmed: {
+            actual: this.gemChecker.numGemableGear - this.gemChecker.numSlotsMissingGem - this.gemChecker.numSlotsMissingMaxGem,
+            max: this.gemChecker.numGemableGear,
+            isLessThan: this.gemChecker.numGemableGear,
             style: 'number',
           },
         }}

@@ -14,6 +14,7 @@ import LegendaryUpgradeChecker from 'Parser/Core/Modules/Items/LegendaryUpgradeC
 import LegendaryCountChecker from 'Parser/Core/Modules/Items/LegendaryCountChecker';
 import PrePotion from 'Parser/Core/Modules/Items/PrePotion';
 import EnchantChecker from 'Parser/Core/Modules/Items/EnchantChecker';
+import GemChecker from 'Parser/Core/Modules/Items/GemChecker';
 
 import AlwaysBeCasting from './AlwaysBeCasting';
 import RunicPowerDetails from '../RunicPower/RunicPowerDetails';
@@ -28,6 +29,7 @@ class Checklist extends CoreChecklist {
     prePotion: PrePotion,
     alwaysBeCasting: AlwaysBeCasting,
     enchantChecker: EnchantChecker,
+    gemChecker: GemChecker,
     runicPowerDetails: RunicPowerDetails,
     runeTracker: RuneTracker,
   };

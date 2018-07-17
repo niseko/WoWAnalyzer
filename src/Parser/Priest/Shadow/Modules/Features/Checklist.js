@@ -11,6 +11,7 @@ import LegendaryUpgradeChecker from 'Parser/Core/Modules/Items/LegendaryUpgradeC
 import LegendaryCountChecker from 'Parser/Core/Modules/Items/LegendaryCountChecker';
 import PrePotion from 'Parser/Core/Modules/Items/PrePotion';
 import EnchantChecker from 'Parser/Core/Modules/Items/EnchantChecker';
+import GemChecker from 'Parser/Core/Modules/Items/GemChecker';
 // features:
 import CastEfficiency from 'Parser/Core/Modules/CastEfficiency';
 import AlwaysBeCasting from '../Features/AlwaysBeCasting';
@@ -31,6 +32,7 @@ class Checklist extends CoreChecklist {
     legendaryCountChecker: LegendaryCountChecker,
     prePotion: PrePotion,
     enchantChecker: EnchantChecker,
+    gemChecker: GemChecker,
 
     // features:
     castEfficiency: CastEfficiency,

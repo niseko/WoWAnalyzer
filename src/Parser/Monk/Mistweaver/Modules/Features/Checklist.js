@@ -17,6 +17,7 @@ import LegendaryUpgradeChecker from 'Parser/Core/Modules/Items/LegendaryUpgradeC
 import LegendaryCountChecker from 'Parser/Core/Modules/Items/LegendaryCountChecker';
 import PrePotion from 'Parser/Core/Modules/Items/PrePotion';
 import EnchantChecker from 'Parser/Core/Modules/Items/EnchantChecker';
+import GemChecker from 'Parser/Core/Modules/Items/GemChecker';
 
 import AlwaysBeCasting from './AlwaysBeCasting';
 import EssenceFont from '../Spells/EssenceFont';
@@ -47,6 +48,7 @@ class Checklist extends CoreChecklist {
     manaTea: ManaTea,
     lifecycles: Lifecycles,
     enchantChecker: EnchantChecker,
+    gemChecker: GemChecker,
     upliftingTrance: UpliftingTrance,
     thunderFocusTea: ThunderFocusTea,
     essenceFontMastery: EssenceFontMastery,

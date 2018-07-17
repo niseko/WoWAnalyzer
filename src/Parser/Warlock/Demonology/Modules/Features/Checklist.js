@@ -11,6 +11,7 @@ import Abilities from 'Parser/Core/Modules/Abilities';
 import LegendaryUpgradeChecker from 'Parser/Core/Modules/Items/LegendaryUpgradeChecker';
 import PrePotion from 'Parser/Core/Modules/Items/PrePotion';
 import EnchantChecker from 'Parser/Core/Modules/Items/EnchantChecker';
+import GemChecker from 'Parser/Core/Modules/Items/GemChecker';
 import SoulShardDetails from 'Parser/Warlock/Demonology/Modules/SoulShards/SoulShardDetails';
 import SoulShardTracker from 'Parser/Warlock/Demonology/Modules/SoulShards/SoulShardTracker';
 import AlwaysBeCasting from 'Parser/Warlock/Demonology/Modules/Features/AlwaysBeCasting';
@@ -30,6 +31,7 @@ class Checklist extends CoreChecklist {
     prePotion: PrePotion,
     felstorm: Felstorm,
     enchantChecker: EnchantChecker,
+    gemChecker: GemChecker,
     soulShardDetails: SoulShardDetails,
     soulShardTracker: SoulShardTracker,
     doomUptime: DoomUptime,

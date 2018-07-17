@@ -58,6 +58,22 @@ class PreparationRule extends React.PureComponent {
       </React.Fragment>
     );
   }
+  renderGemRequirements() {
+    const { thresholds } = this.props;
+
+    return (
+      <React.Fragment>
+        <Requirement
+          name="All items gemmed"
+          thresholds={thresholds.itemsGemmed}
+        />
+        <Requirement
+          name="Using high quality gems"
+          thresholds={thresholds.itemsBestGemmed}
+        />
+      </React.Fragment>
+    );
+  }
 
   render() {
     const { children } = this.props;
@@ -69,6 +85,7 @@ class PreparationRule extends React.PureComponent {
       >
         {this.renderLegendaryRequirements()}
         {this.renderEnchantRequirements()}
+        {this.renderGemRequirements()}
         {this.renderPotionRequirements()}
         {children}
       </Rule>

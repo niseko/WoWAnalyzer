@@ -13,6 +13,7 @@ import CastEfficiency from 'Parser/Core/Modules/CastEfficiency';
 import SpellLink from 'common/SpellLink';
 import Icon from "common/Icon";
 import EnchantChecker from 'Parser/Core/Modules/Items/EnchantChecker';
+import GemChecker from 'Parser/Core/Modules/Items/GemChecker';
 import ITEMS from 'common/ITEMS/HUNTER';
 import ItemLink from 'common/ItemLink';
 import ResourceIcon from 'common/ResourceIcon';
@@ -48,6 +49,7 @@ class Checklist extends CoreChecklist {
     legendaryCountChecker: LegendaryCountChecker,
     prePotion: PrePotion,
     enchantChecker: EnchantChecker,
+    gemChecker: GemChecker,
 
     //features:
     castEfficiency: CastEfficiency,

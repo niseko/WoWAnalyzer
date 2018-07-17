@@ -12,6 +12,7 @@ import LegendaryUpgradeChecker from 'Parser/Core/Modules/Items/LegendaryUpgradeC
 import LegendaryCountChecker from 'Parser/Core/Modules/Items/LegendaryCountChecker';
 import PrePotion from 'Parser/Core/Modules/Items/PrePotion';
 import EnchantChecker from 'Parser/Core/Modules/Items/EnchantChecker';
+import GemChecker from 'Parser/Core/Modules/Items/GemChecker';
 import Abilities from 'Parser/Core/Modules/Abilities';
 import ShieldOfTheRighteous from './ShieldOfTheRighteous';
 import Consecration from './Consecration';
@@ -24,6 +25,7 @@ class Checklist extends CoreChecklist {
     legendaryUpgradeChecker: LegendaryUpgradeChecker,
     prePotion: PrePotion,
     enchantChecker: EnchantChecker,
+    gemChecker: GemChecker,
     shieldOfTheRighteous: ShieldOfTheRighteous,
     consecration: Consecration,
   };

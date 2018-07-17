@@ -1,6 +1,7 @@
 import Rule from '../Rule';
 import Requirement from '../Requirement';
 import { EnchantsRequirement } from '../Requirements';
+import { GemsRequirement } from '../Requirements';
 
 class PreparationRule extends Rule {
   constructor(options = {}, extraRequirements = []) {
@@ -38,6 +39,8 @@ class PreparationRule extends Rule {
             check: () => this.prePotion.secondPotionSuggestionThresholds,
           }),
           new EnchantsRequirement(),
+          ...extraRequirements,
+          new GemsRequirement(),
           ...extraRequirements,
         ];
       },

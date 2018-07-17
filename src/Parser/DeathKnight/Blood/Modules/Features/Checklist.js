@@ -13,6 +13,7 @@ import LegendaryUpgradeChecker from 'Parser/Core/Modules/Items/LegendaryUpgradeC
 import LegendaryCountChecker from 'Parser/Core/Modules/Items/LegendaryCountChecker';
 import PrePotion from 'Parser/Core/Modules/Items/PrePotion';
 import EnchantChecker from 'Parser/Core/Modules/Items/EnchantChecker';
+import GemChecker from 'Parser/Core/Modules/Items/GemChecker';
 
 import BoneShield from './BoneShield';
 import BloodPlagueUptime from './BloodPlagueUptime';
@@ -40,6 +41,7 @@ class Checklist extends CoreChecklist {
     bloodplagueUptime: BloodPlagueUptime,
     alwaysBeCasting: AlwaysBeCasting,
     enchantChecker: EnchantChecker,
+    gemChecker: GemChecker,
     boneShield: BoneShield,
     ossuary: Ossuary,
     runeStrike: RuneStrike,

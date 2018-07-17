@@ -52,6 +52,7 @@ import PrePotion from './Modules/Items/PrePotion';
 import LegendaryUpgradeChecker from './Modules/Items/LegendaryUpgradeChecker';
 import LegendaryCountChecker from './Modules/Items/LegendaryCountChecker';
 import EnchantChecker from './Modules/Items/EnchantChecker';
+import GemChecker from './Modules/Items/GemChecker';
 import Healthstone from './Modules/Items/Healthstone';
 
 // Legendaries
@@ -191,6 +192,7 @@ class CombatLogParser {
     legendaryUpgradeChecker: LegendaryUpgradeChecker,
     legendaryCountChecker: LegendaryCountChecker,
     enchantChecker: EnchantChecker,
+    gemChecker: GemChecker,
     healthstone: Healthstone,
 
     // Items:
