@@ -113,8 +113,26 @@ class MasteryEffectiveness extends Analyzer {
       return obj;
     }, {});
 
+    const statsBySpellId = this.masteryHealEvents.reduce((obj, event) => {
+      // Update the player-totals
+      if (!obj[event.ability.guid]) {
+        obj[event.ability.guid] = {
+          healing: 0,
+          healingFromMastery: 0,
+          maxPotentialHealingFromMastery: 0,
+        };
+      }
+      const abilityStats = obj[event.ability.guid];
+      abilityStats.healing += event.amount;
+      abilityStats.healingFromMastery += event.masteryHealingDone;
+      abilityStats.maxPotentialHealingFromMastery += event.maxPotentialMasteryHealing;
+
+      return obj;
+    }, {});
+
     return {
       statsByTargetId,
+      statsBySpellId,
       totalHealingWithMasteryAffectedAbilities,
       totalHealingFromMastery,
       totalMaxPotentialMasteryHealing,
