@@ -25,7 +25,10 @@ import { STAT_TRACKER as UNSTABLE_CATALYST_STATS } from 'parser/shared/modules/s
 import { STAT_TRACKER as SWIRLING_SANDS_STATS } from 'parser/shared/modules/spells/bfa/azeritetraits/SwirlingSands';
 import { STAT_TRACKER as TRADEWINDS_STATS } from 'parser/shared/modules/spells/bfa/azeritetraits/Tradewinds';
 
-const debug = false;
+const debug = true;
+const ARMOR_SPECIALIZATION = .05;
+const SPELL_MULTIPLIER = .1;
+const SCROLL_MULTIPLIER = .07;
 
 // TODO: stat constants somewhere else? they're largely copied from combatant
 class StatTracker extends Analyzer {
@@ -39,6 +42,23 @@ class StatTracker extends Analyzer {
   static SPEC_MULTIPLIERS = {
     [SPECS.BREWMASTER_MONK.id]: { armor: 1.25 },
   };
+
+  static STAT_MULTIPLIERS = {
+    [SPELLS.ARCANE_INTELLECT.id]: {
+      intellect: (int) => int * SPELL_MULTIPLIER,
+    },
+    [SPELLS.BATTLE_SHOUT.id]: {
+      strength: (str) => str * SPELL_MULTIPLIER,
+      agility: (agi) => agi * SPELL_MULTIPLIER,
+    },
+    [SPELLS.WARSCROLL_OF_INTELLECT.id]: {
+      intellect: (int) => int * SCROLL_MULTIPLIER,
+    },
+    [SPELLS.WARSCROLL_OF_BATTLE_SHOUT.id]: {
+      strength: (str) => str * SCROLL_MULTIPLIER,
+      agility: (agi) => agi * SCROLL_MULTIPLIER,
+    },
+  }
 
   static STAT_BUFFS = {
     // region Potions
@@ -461,6 +481,8 @@ class StatTracker extends Analyzer {
 
   _pullStats = {};
   _currentStats = {};
+  arcaneIntellect;
+  battleShout;
 
   constructor(...args) {
     super(...args);
@@ -485,6 +507,10 @@ class StatTracker extends Analyzer {
     this._currentStats = {
       ...this._pullStats,
     };
+
+    this.arcaneIntellect = this.selectedCombatant.hasBuff(SPELLS.ARCANE_INTELLECT.id) ? SPELL_MULTIPLIER : 0;
+    this.battleShout = this.selectedCombatant.hasBuff(SPELLS.BATTLE_SHOUT.id) ? SPELL_MULTIPLIER : 0;
+    // BUFF = SPELLID OR 0 ??
 
     debug && this._debugPrintStats(this._currentStats);
   }
@@ -741,6 +767,9 @@ class StatTracker extends Analyzer {
   _changeBuffStack(event) {
     const spellId = event.ability.guid;
     const statBuff = this.constructor.STAT_BUFFS[spellId];
+    const statMultiplier = this.constructor.STAT_MULTIPLIERS[spellId];
+    
+    //console.log(this.constructor.STAT_MULTIPLIERS[SPELLS.ARCANE_INTELLECT.id].intellect(this.currentIntellectRating));
     if (statBuff) {
       // ignore prepull buff application, as they're already accounted for in combatantinfo
       // we have to check the stacks count because Entities incorrectly copies the prepull property onto changes and removal following the application
@@ -756,13 +785,41 @@ class StatTracker extends Analyzer {
       debug && console.log(`StatTracker: (${event.oldStacks} -> ${event.newStacks}) ${SPELLS[spellId] ? SPELLS[spellId].name : spellId} @ ${formatMilliseconds(this.owner.fightDuration)} - Change: ${this._statPrint(delta)}`);
       debug && this._debugPrintStats(this._currentStats);
     }
+    if (statMultiplier) {
+      const before = Object.assign({}, this._currentStats);
+      const delta = this._applyStatMultipliers(statMultiplier, event.newStacks - event.oldStacks);
+      const after = Object.assign({}, this._currentStats);
+      this._triggerChangeStats(event, before, delta, after);
+      debug && console.log(`StatTracker: (${event.oldStacks} -> ${event.newStacks}) ${SPELLS[spellId] ? SPELLS[spellId].name : spellId} @ ${formatMilliseconds(this.owner.fightDuration)} - Change: ${this._statPrint(delta)}`);
+      debug && this._debugPrintStats(this._currentStats);
+    }
+  }
+
+  _applyStatMultipliers(change, factor) {
+    const intellectChange = change.intellect ? change.intellect(this.currentIntellectRating) : 0;
+    const strengthChange = change.strength ? change.strength(this.currentStrengthRating) : 0;
+    const agilityChange = change.agility ? change.agility(this.currentAgilityRating) : 0;
+
+    const delta = {
+      strength: strengthChange * factor,
+      agility: agilityChange * factor,
+      intellect: intellectChange * factor,
+    };
+
+    Object.keys(this._currentStats).filter(key => !!delta[key]).forEach(key => {
+      this._currentStats[key] += delta[key];
+    });
+
+    this.currentIntMultiplier = 1.1;
+
+    return delta;
   }
 
   _changeStats(change, factor) {
     const delta = {
-      strength: this._getBuffValue(change, change.strength) * factor,
-      agility: this._getBuffValue(change, change.agility) * factor,
-      intellect: this._getBuffValue(change, change.intellect) * factor,
+      strength: this._getBuffValue(change, change.strength) * factor * (1 + ARMOR_SPECIALIZATION),
+      agility: this._getBuffValue(change, change.agility) * factor * (1 + ARMOR_SPECIALIZATION),
+      intellect: this._getBuffValue(change, change.intellect) * factor * (1 + ARMOR_SPECIALIZATION),
       stamina: this._getBuffValue(change, change.stamina) * factor,
       crit: this._getBuffValue(change, change.crit) * factor,
       haste: this._getBuffValue(change, change.haste) * factor,
@@ -817,6 +874,12 @@ class StatTracker extends Analyzer {
       }
       return statVal(selectedCombatant, itemDetails);
     } else {
+      if (this.arcaneIntellect && buffObj.intellect) {
+        return statVal * (1 + this.arcaneIntellect);
+      }
+      if (this.battleShout && (buffObj.strength || buffObj.agility)) {
+        return statVal * (1 + this.battleShout);
+      }
       return statVal;
     }
   }
