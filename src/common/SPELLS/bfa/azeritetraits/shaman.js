@@ -118,4 +118,9 @@ export default {
     name: 'Pack Spirit',
     icon: 'spell_nature_spiritwolf',
   },
+  TURN_OF_THE_TIDE_TRAIT: {
+    id: 287300,
+    name: 'Turn of the Tide',
+    icon: 'spell_shaman_tidalwaves',
+  },
 };
