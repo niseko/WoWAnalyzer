@@ -13,7 +13,7 @@ import Analyzer from 'parser/core/Analyzer';
 import SpellUsable from 'parser/shared/modules/SpellUsable';
 import AbilityTracker from 'parser/shared/modules/AbilityTracker';
 
-import CooldownThroughputTracker from '../features/CooldownThroughputTracker';
+import CooldownThroughputTracker from '../features/FeedingTracker';
 
 const BUFFER = 100;
 const cooldownIncrease = 5000;

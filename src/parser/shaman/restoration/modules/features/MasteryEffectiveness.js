@@ -9,6 +9,7 @@ import StatTracker from 'parser/shared/modules/StatTracker';
 import AbilityTracker from 'parser/shared/modules/AbilityTracker';
 import StatisticBox, { STATISTIC_ORDER } from 'interface/others/StatisticBox';
 import PlayerBreakdownTab from 'interface/others/PlayerBreakdownTab';
+import HealingValue from 'parser/shared/modules/HealingValue';
 
 
 import { ABILITIES_AFFECTED_BY_MASTERY } from '../../constants';
@@ -25,11 +26,20 @@ class MasteryEffectiveness extends Analyzer {
 
   masteryHealEvents = [];
 
+  rawMasteryEffectivenessSum = 0;
+  rawMasteryEffectivenessCount = 0;
+  get rawMasteryEffectivenessAverage() {
+    return this.rawMasteryEffectivenessSum / this.rawMasteryEffectivenessCount;
+  }
+  scaledMasteryEffectivenessSum = 0;
+  scaledMasteryEffectivenessCount = 0;
+  get scaledMasteryEffectivenessAverage() {
+    return this.scaledMasteryEffectivenessSum / this.scaledMasteryEffectivenessCount;
+  }
+  totalMasteryHealingDone = 0;
+
   on_byPlayer_heal(event) {
     const isAbilityAffectedByMastery = ABILITIES_AFFECTED_BY_MASTERY.includes(event.ability.guid);
-
-    const healingDone = event.amount + (event.absorbed || 0) + (event.overheal || 0);
-
     if (!isAbilityAffectedByMastery) {
       return;
     }
@@ -37,26 +47,40 @@ class MasteryEffectiveness extends Analyzer {
     const healthBeforeHeal = event.hitPoints - event.amount;
     const masteryEffectiveness = Math.max(0, 1 - healthBeforeHeal / event.maxHitPoints);
 
+    this.rawMasteryEffectivenessSum += masteryEffectiveness;
+    this.rawMasteryEffectivenessCount += 1;
+
+    const hp = event.hitPoints;
+    const remainingHealthMissing = event.maxHitPoints - hp;
+    const heal = new HealingValue(event.amount, event.absorbed, event.overheal);
+    const applicableMasteryPercentage = this.statTracker.currentMasteryPercentage * masteryEffectiveness;
+
+
     // The base healing of the spell (excluding any healing added by mastery)
-    const masteryPercent = this.statTracker.currentMasteryPercentage;
-    const baseHealingDone = healingDone / (1 + masteryPercent * masteryEffectiveness);
-    const masteryHealingDone = healingDone - baseHealingDone;
+    const baseHealingDone = heal.raw / (1 + applicableMasteryPercentage);
+    const actualMasteryHealingDone = Math.max(0, heal.effective - baseHealingDone);
+    this.totalMasteryHealingDone += actualMasteryHealingDone;
+
     // The max potential mastery healing if we had a mastery effectiveness of 100% on this spell. This does NOT include the base healing
     // Example: a heal that did 1,324 healing with 32.4% mastery with 100% mastery effectiveness will have a max potential mastery healing of 324.
-    const maxPotentialMasteryHealing = baseHealingDone * masteryPercent; // * 100% mastery effectiveness
+    const maxPotentialRawMasteryHealing = baseHealingDone * this.statTracker.currentMasteryPercentage; // * 100% mastery effectiveness
+    const maxPotentialRawMasteryGain = maxPotentialRawMasteryHealing - actualMasteryHealingDone;
+    const maxPotentialMasteryGain = actualMasteryHealingDone + Math.min(remainingHealthMissing, maxPotentialRawMasteryGain);
 
-    this.totalMasteryHealing += Math.max(0, masteryHealingDone - (event.overheal || 0));
-    this.totalMaxPotentialMasteryHealing += Math.max(0, maxPotentialMasteryHealing - (event.overheal || 0));
+    const adjustedMasteryEffectiveness = actualMasteryHealingDone / maxPotentialMasteryGain;
+    if (!isNaN(adjustedMasteryEffectiveness)) {
+      this.scaledMasteryEffectivenessSum += adjustedMasteryEffectiveness;
+      this.scaledMasteryEffectivenessCount += 1;
+    }
 
     this.masteryHealEvents.push({
       ...event,
       healthBeforeHeal,
       masteryEffectiveness,
       baseHealingDone,
-      masteryHealingDone,
-      maxPotentialMasteryHealing,
+      actualMasteryHealingDone,
+      maxPotentialMasteryGain,
     });
-
     event.masteryEffectiveness = masteryEffectiveness;
   }
 
@@ -66,10 +90,13 @@ class MasteryEffectiveness extends Analyzer {
   }
 
   get masteryEffectivenessPercent() {
-    return this.totalMasteryHealing / this.totalMaxPotentialMasteryHealing;
+    return this.report.totalActualMasteryHealingDone / (this.report.totalMaxPotentialMasteryGain || 1);
   }
 
   statistic() {
+    console.log('raw', this.rawMasteryEffectivenessAverage);
+    console.log('scaling (health capped)', this.scaledMasteryEffectivenessAverage);
+    console.log('total mastery healing done', this.owner.formatItemHealingDone(this.totalMasteryHealingDone));
     const masteryPercent = this.statTracker.currentMasteryPercentage;
     const avgEffectiveMasteryPercent = this.masteryEffectivenessPercent * masteryPercent;
 
@@ -89,14 +116,14 @@ class MasteryEffectiveness extends Analyzer {
 
   get report() {
     let totalHealingWithMasteryAffectedAbilities = 0;
-    let totalHealingFromMastery = 0;
-    let totalMaxPotentialMasteryHealing = 0;
+    let totalActualMasteryHealingDone = 0;
+    let totalMaxPotentialMasteryGain = 0;
 
     const statsByTargetId = this.masteryHealEvents.reduce((obj, event) => {
       // Update the fight-totals
       totalHealingWithMasteryAffectedAbilities += event.amount;
-      totalHealingFromMastery += event.masteryHealingDone;
-      totalMaxPotentialMasteryHealing += event.maxPotentialMasteryHealing;
+      totalActualMasteryHealingDone += event.actualMasteryHealingDone;
+      totalMaxPotentialMasteryGain += event.maxPotentialMasteryGain;
 
       // Update the player-totals
       if (!obj[event.targetID]) {
@@ -110,8 +137,8 @@ class MasteryEffectiveness extends Analyzer {
       }
       const playerStats = obj[event.targetID];
       playerStats.healingReceived += event.amount;
-      playerStats.healingFromMastery += event.masteryHealingDone;
-      playerStats.maxPotentialHealingFromMastery += event.maxPotentialMasteryHealing;
+      playerStats.healingFromMastery += event.actualMasteryHealingDone;
+      playerStats.maxPotentialHealingFromMastery += event.maxPotentialMasteryGain;
 
       return obj;
     }, {});
@@ -119,8 +146,8 @@ class MasteryEffectiveness extends Analyzer {
     return {
       statsByTargetId,
       totalHealingWithMasteryAffectedAbilities,
-      totalHealingFromMastery,
-      totalMaxPotentialMasteryHealing,
+      totalActualMasteryHealingDone,
+      totalMaxPotentialMasteryGain,
     };
   }
 

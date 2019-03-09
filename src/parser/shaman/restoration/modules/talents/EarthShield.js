@@ -13,7 +13,7 @@ import StatisticBox, { STATISTIC_ORDER } from 'interface/others/StatisticBox';
 import StatisticListBoxItem from 'interface/others/StatisticListBoxItem';
 import STATISTIC_CATEGORY from 'interface/others/STATISTIC_CATEGORY';
 
-import CooldownThroughputTracker from '../features/CooldownThroughputTracker';
+import CooldownThroughputTracker from '../features/FeedingTracker';
 import { ABILITIES_AFFECTED_BY_HEALING_INCREASES } from '../../constants';
 
 const EARTHSHIELD_HEALING_INCREASE = 0.10;

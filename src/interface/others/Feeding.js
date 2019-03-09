@@ -6,6 +6,8 @@ import SpellLink from 'common/SpellLink';
 import Icon from 'common/Icon';
 // import Toggle from 'react-toggle';
 
+import FeedingCast from './FeedingCast';
+
 function formatThousands(number) {
   return (`${Math.round(number || 0)}`).replace(/(\d)(?=(\d{3})+(?!\d))/g, '$1,');
 }
@@ -23,6 +25,20 @@ function formatNumber(number) {
 class Feeding extends React.Component {
   static propTypes = {
     cooldownThroughputTracker: PropTypes.object,
+    fightStart: PropTypes.number.isRequired,
+    fightEnd: PropTypes.number.isRequired,
+    cooldowns: PropTypes.arrayOf(PropTypes.shape({
+      ability: PropTypes.shape({
+        id: PropTypes.number.isRequired,
+        name: PropTypes.string.isRequired,
+        icon: PropTypes.string.isRequired,
+      }),
+      start: PropTypes.number.isRequired,
+      end: PropTypes.number,
+      events: PropTypes.arrayOf(PropTypes.shape({
+        type: PropTypes.string.isRequired,
+      })).isRequired,
+    })).isRequired,
   };
 
   constructor() {
@@ -33,9 +49,10 @@ class Feeding extends React.Component {
   }
 
   render() {
-    const { cooldownThroughputTracker } = this.props;
+    const { cooldownThroughputTracker, fightStart, fightEnd, cooldowns } = this.props;
 
     return (
+      <>
       <div>
         {([
           {
@@ -128,6 +145,15 @@ class Feeding extends React.Component {
           ))
         }
       </div>
+      <div style={{ marginTop: -10, marginBottom: -10 }}>
+    <ul className="list">
+      {cooldowns.map(cooldown => (
+        <li key={`${cooldown.spell.id}-${cooldown.start}`} className="item clearfix" style={{ padding: '1em' }}>
+          <FeedingCast cooldown={cooldown} fightStart={fightStart} fightEnd={fightEnd} />
+        </li>
+      ))}
+    </ul>
+  </div></>
     );
   }
 }

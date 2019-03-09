@@ -5,7 +5,8 @@ import SpellLink from 'common/SpellLink';
 import SPELLS from 'common/SPELLS';
 import { formatPercentage } from 'common/format';
 
-import Analyzer from 'parser/core/Analyzer';
+import Analyzer, { SELECTED_PLAYER } from 'parser/core/Analyzer';
+import Events from 'parser/core/Events';
 import GlobalCooldown from 'parser/shared/modules/GlobalCooldown';
 import StatisticsListBox, { STATISTIC_ORDER } from 'interface/others/StatisticsListBox';
 import STATISTIC_CATEGORY from 'interface/others/STATISTIC_CATEGORY';
@@ -13,6 +14,14 @@ import STATISTIC_CATEGORY from 'interface/others/STATISTIC_CATEGORY';
 const FLASH_FLOOD_HASTE = 0.2;
 const BUFFER_MS = 50;
 const CHART_SIZE = 75;
+
+const WHITELIST = [
+  SPELLS.HEALING_WAVE,
+  SPELLS.CHAIN_HEAL,
+  SPELLS.HEALING_SURGE_RESTORATION,
+  SPELLS.HEALING_RAIN_CAST,
+  SPELLS.WELLSPRING_TALENT,
+];
 
 class FlashFlood extends Analyzer {
   static dependencies = {
@@ -56,33 +65,27 @@ class FlashFlood extends Analyzer {
         timeWasted: 0,
       };
     }
+
+    this.addEventListener(Events.begincast.by(SELECTED_PLAYER).spell(WHITELIST), this.onBeginCast);
+    this.addEventListener(Events.cast.by(SELECTED_PLAYER).spell(WHITELIST), this.onCast);
+    console.log(this.spellsConsumingFlashFlood);
   }
 
-  on_byPlayer_begincast(event) {
-    const spellId = event.ability.guid;
-    if (!this.spellsConsumingFlashFlood[spellId]) {
-      return;
-    }
-
+  onBeginCast(event) {
     if (event.isCancelled) {
       return;
     }
 
     this.beginCastTimestamp = event.timestamp;
-    this.beginCastGlobalCooldown = this.globalCooldown.getGlobalCooldownDuration(spellId);
+    this.beginCastGlobalCooldown = this.globalCooldown.getGlobalCooldownDuration(event.ability.guid);
   }
 
-  on_byPlayer_cast(event) {
+  onCast(event) {
     if (!this.beginCastTimestamp) {
       return;
     }
 
     const spellId = event.ability.guid;
-    // check again to be safe & to avoid breaking the page
-    if (!this.spellsConsumingFlashFlood[spellId]) {
-      return;
-    }
-
     const hasFlashFlood = this.selectedCombatant.hasBuff(SPELLS.FLASH_FLOOD_BUFF.id, this.beginCastTimestamp+BUFFER_MS);
     if (!hasFlashFlood) {
       return;

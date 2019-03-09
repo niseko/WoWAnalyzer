@@ -7,7 +7,7 @@ import ManaTracker from 'parser/core/healingEfficiency/ManaTracker';
 import SPELLS from 'common/SPELLS';
 import HealingDone from './HealingDone';
 import Resurgence from '../spells/Resurgence';
-import CooldownThroughputTracker from '../features/CooldownThroughputTracker';
+import CooldownThroughputTracker from '../features/FeedingTracker';
 import UnleashLife from '../talents/UnleashLife';
 import EarthShield from '../talents/EarthShield';
 

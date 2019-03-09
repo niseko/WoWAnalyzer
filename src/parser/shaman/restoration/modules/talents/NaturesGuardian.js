@@ -7,7 +7,7 @@ import Analyzer from 'parser/core/Analyzer';
 import EventEmitter from 'parser/core/modules/EventEmitter';
 import StatisticListBoxItem from 'interface/others/StatisticListBoxItem';
 
-import CooldownThroughputTracker from '../features/CooldownThroughputTracker';
+import CooldownThroughputTracker from '../features/FeedingTracker';
 
 /**
  * When your health is brought below 35%, you instantly heal for 20% of your maximum health.

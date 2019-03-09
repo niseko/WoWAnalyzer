@@ -2,7 +2,7 @@ import EventsNormalizer from 'parser/core/EventsNormalizer';
 
 import SPELLS from 'common/SPELLS';
 
-const MAX_DELAY = 20000;
+const MAX_DELAY = 17000;
 const CBT_DELAY = 15000;
 
 /*
@@ -17,12 +17,18 @@ const CBT_DELAY = 15000;
 * if no healing events happened within 20 seconds after casting the totem.
  */
 
-class CloudburstNormalizer extends EventsNormalizer {
+class CloudburstCastNormalizer extends EventsNormalizer {
 
   fabricatedEvent = null;
+  precast = true;
+  precastEvent = null;
 
   normalize(events) {
+    if (!this.selectedCombatant.hasTalent(SPELLS.CLOUDBURST_TOTEM_TALENT.id)) {
+      return events;
+    }
     const fixedEvents = [];
+
     events.forEach((event, eventIndex) => {
 
       if(this.fabricatedEvent) {
@@ -34,25 +40,22 @@ class CloudburstNormalizer extends EventsNormalizer {
 
       fixedEvents.push(event);
 
-
       if (event.type === 'cast' && event.ability.guid === SPELLS.CLOUDBURST_TOTEM_TALENT.id) {
+        this.precast = false;
         const castTimestamp = event.timestamp;
         let recallTimestamp = null;
-
         // Look ahead through the events to see if there is an CLOUDBURST_TOTEM_HEAL within a 20 second period
         for (let nextEventIndex = eventIndex; nextEventIndex < events.length-1; nextEventIndex += 1) {
           const nextEvent = events[nextEventIndex];
-          
           if ((nextEvent.timestamp - castTimestamp) > MAX_DELAY) {
             // No CLOUDBURST_TOTEM_HEAL found within the period, meaning this cast wasn't able to find targets and did not have any healing events -> create a 100% overheal event
             const newTimestamp = (recallTimestamp) ? recallTimestamp : event.timestamp+CBT_DELAY;
-            
             this.fabricatedEvent = {
-              timestamp: newTimestamp, 
-              type: "heal", 
-              sourceID: event.sourceID, 
+              timestamp: newTimestamp,
+              type: "heal",
+              sourceID: event.sourceID,
               targetID: event.sourceID,
-              sourceIsFriendly: true, 
+              sourceIsFriendly: true,
               targetIsFriendly: true,
               ability: {
                 abilityIcon: SPELLS.CLOUDBURST_TOTEM_HEAL.icon,
@@ -68,8 +71,9 @@ class CloudburstNormalizer extends EventsNormalizer {
               __fabricated: true,
             };
             break;
-          } else if (nextEvent.type === 'cast' && nextEvent.ability.guid === SPELLS.CLOUDBURST_TOTEM_RECALL.id) {
-            recallTimestamp = nextEvent.timestamp;
+          // new cast or recall point, whichever comes first
+          } else if (nextEvent.type === 'cast' && (nextEvent.ability.guid === SPELLS.CLOUDBURST_TOTEM_RECALL.id || nextEvent.ability.guid === SPELLS.CLOUDBURST_TOTEM_TALENT.id)) {
+            recallTimestamp = recallTimestamp ? recallTimestamp : nextEvent.timestamp;
             continue;
           } else if (nextEvent.type === 'heal' && nextEvent.ability.guid === SPELLS.CLOUDBURST_TOTEM_HEAL.id) {
             // CLOUDBURST_TOTEM_HEAL found, this was fine
@@ -77,10 +81,17 @@ class CloudburstNormalizer extends EventsNormalizer {
           }
         }
       }
+      if ((event.timestamp <= MAX_DELAY) && ((event.type === 'cast' && event.ability.guid === SPELLS.CLOUDBURST_TOTEM_RECALL.id) || (event.type === 'heal' && event.ability.guid === SPELLS.CLOUDBURST_TOTEM_HEAL.id))) {
+        if (this.precast) {
+          this.precastEvent = {
+            //
+          };
+        }
+      }
     });
-
+    // if precast event, add to start of fixedevents
+    // this needs to happen before the feed normalizer though
     return fixedEvents;
   }
-
 }
-export default CloudburstNormalizer;
+export default CloudburstCastNormalizer;

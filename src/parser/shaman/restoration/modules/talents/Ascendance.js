@@ -8,7 +8,7 @@ import Analyzer from 'parser/core/Analyzer';
 
 import StatisticListBoxItem from 'interface/others/StatisticListBoxItem';
 
-import CooldownThroughputTracker from '../features/CooldownThroughputTracker';
+import CooldownThroughputTracker from '../features/FeedingTracker';
 
 class Ascendance extends Analyzer {
   static dependencies = {

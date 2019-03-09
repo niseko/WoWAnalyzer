@@ -142,6 +142,7 @@ export default {
     name: 'Every Man for Himself',
     icon: 'spell_shadow_charm',
   },
+  // Night Elf
   SHADOWMELD: {
     id: 58984,
     name: 'Shadowmeld',
@@ -281,5 +282,11 @@ export default {
     id: 274742,
     name: 'Might of the Blackrock',
     icon: 'ability_racial_ancestralcall',
+  },
+  // Dark Iron Dwarf
+  FIREBLOOD: { // Mainstat Buff
+    id: 273104,
+    name: 'Fireblood',
+    icon: 'ability_racial_fireblood',
   },
 };

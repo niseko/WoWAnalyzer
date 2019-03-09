@@ -37,7 +37,12 @@ class TurnOfTheTide extends BaseHealerAzerite {
 
     this.addEventListener(Events.heal.by(SELECTED_PLAYER).spell(SPELLS.HEALING_WAVE), this.onHealingWave);
     this.addEventListener(Events.heal.by(SELECTED_PLAYER).spell(SPELLS.HEALING_SURGE_RESTORATION), this.onHealingSurge);
+    this.addEventListener(Events.cast.by(SELECTED_PLAYER), this.cast);
     // todo check chaincasting for haste
+  }
+
+  cast(event) {
+    console.log(event.spellPower);
   }
 
   onHealingWave(event) {

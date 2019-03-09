@@ -13,7 +13,7 @@ import StatisticBox from 'interface/others/StatisticBox';
 import STATISTIC_CATEGORY from 'interface/others/STATISTIC_CATEGORY';
 
 import Combatants from 'parser/shared/modules/Combatants';
-import CooldownThroughputTracker from '../features/CooldownThroughputTracker';
+import CooldownThroughputTracker from '../features/FeedingTracker';
 
 class Wellspring extends Analyzer {
   static dependencies = {

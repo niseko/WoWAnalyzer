@@ -18,3 +18,5 @@ Poke @emallson for questions/complaints.
 ```sh
 $ node extract.js <path-to-simc>/engine/dbc/generated/sc_spell_data.inc > src/common/AZERITE_SCALING.generated.json
 ```
+
+node extract.js C:/Users/rentz/Documents/GitHub/simc/engine/dbc/generated/sc_spell_data.inc > ../../src/common/AZERITE_SCALING.generated.json

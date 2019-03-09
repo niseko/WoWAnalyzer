@@ -2,7 +2,6 @@ import React from 'react';
 
 import Tab from 'interface/others/Tab';
 import RestorationShamanSpreadsheet from 'interface/others/RestorationShamanSpreadsheet';
-import Feeding from 'interface/others/Feeding';
 
 import CoreCombatLogParser from 'parser/core/CombatLogParser';
 import HealingEfficiencyDetails from 'parser/core/healingEfficiency/HealingEfficiencyDetails';
@@ -17,7 +16,7 @@ import HealingRainLocation from './modules/core/HealingRainLocation';
 
 import MasteryEffectiveness from './modules/features/MasteryEffectiveness';
 import AlwaysBeCasting from './modules/features/AlwaysBeCasting';
-import CooldownThroughputTracker from './modules/features/CooldownThroughputTracker';
+import CooldownThroughputTracker from './modules/features/FeedingTracker';
 import Checklist from './modules/features/checklist/Module';
 import SpellUsable from './modules/features/SpellUsable';
 import StatValues from './modules/features/StatValues';
@@ -33,6 +32,7 @@ import Undulation from './modules/talents/Undulation';
 import FlashFlood from './modules/talents/FlashFlood';
 import EarthShield from './modules/talents/EarthShield';
 import AncestralVigor from './modules/talents/AncestralVigor';
+import AncestralProtectionTotem from './modules/talents/AncestralProtectionTotem';
 import EarthenWallTotem from './modules/talents/EarthenWallTotem';
 import Downpour from './modules/talents/Downpour';
 import CloudburstTotem from './modules/talents/CloudburstTotem';
@@ -62,7 +62,8 @@ import AstralShift from '../shared/spells/AstralShift';
 import PackSpirit from '../shared/azerite/PackSpirit';
 import SereneSpirit from '../shared/azerite/SereneSpirit';
 
-import CloudburstNormalizer from './normalizers/CloudburstNormalizer';
+import CloudburstCastNormalizer from './normalizers/CloudburstCastNormalizer';
+import CloudburstFeedNormalizer from './normalizers/CloudburstFeedNormalizer';
 
 import { ABILITIES_AFFECTED_BY_HEALING_INCREASES } from './constants';
 
@@ -98,6 +99,7 @@ class CombatLogParser extends CoreCombatLogParser {
     flashFlood: FlashFlood,
     earthShield: EarthShield,
     ancestralVigor: AncestralVigor,
+    ancestralProtectionTotem: AncestralProtectionTotem,
     earthenWallTotem: EarthenWallTotem,
     downpour: Downpour,
     cloudburstTotem: CloudburstTotem,
@@ -132,7 +134,8 @@ class CombatLogParser extends CoreCombatLogParser {
     sereneSpirit: SereneSpirit,
 
     // Normalizers:
-    cloudburstNormalizer: CloudburstNormalizer,
+    cloudburstCastNormalizer: CloudburstCastNormalizer,
+    cloudburstFeedNormalizer: CloudburstFeedNormalizer,
   };
 
   generateResults(...args) {
@@ -146,17 +149,6 @@ class CombatLogParser extends CoreCombatLogParser {
         render: () => (
           <Tab style={{ padding: '15px 22px 15px 15px' }}>
             <RestorationShamanSpreadsheet parser={this} />
-          </Tab>
-        ),
-      },
-      {
-        title: 'Feeding',
-        url: 'feeding',
-        render: () => (
-          <Tab style={{ padding: 0 }}>
-            <Feeding
-              cooldownThroughputTracker={this.getModule(CooldownThroughputTracker)}
-            />
           </Tab>
         ),
       },
