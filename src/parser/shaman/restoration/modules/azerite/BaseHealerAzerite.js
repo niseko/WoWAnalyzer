@@ -98,41 +98,39 @@ class BaseHealerAzerite extends Analyzer {
           category={STATISTIC_CATEGORY.ITEMS}
           tooltip={this.moreInformation}
         >
-          <>
-            <h4 style={{ textAlign: 'center' }}>
-              <SpellLink id={this.constructor.TRAIT.id} />
-            </h4>
-            <div className="flex" style={{ borderBottom: '1px solid #fab700', fontWeight: 'bold', fontSize: '14px', padding: '6px 22px 5px' }}>
-              <div className="flex-main">
-                {`Total`}
-              </div>
-              <div className="flex-sub text-right">
-                <ItemHealingDone amount={this.totalHealing} />
-              </div>
+          <h4 style={{ textAlign: 'center' }}>
+            <SpellLink id={this.constructor.TRAIT.id} />
+          </h4>
+          <div className="flex" style={{ borderBottom: '1px solid #fab700', fontWeight: 'bold', fontSize: '14px', padding: '6px 22px 5px' }}>
+            <div className="flex-main">
+              Total
             </div>
-            <table className="data-table compact" style={{ textAlign: 'center', marginBottom: 0 }}>
-              <thead>
-                <tr>
-                  {numTraits > 1 && (<th style={{ width: '25%', textAlign: 'center' }}><b>Trait</b></th>)}
-                  <th style={{ width: '25%', textAlign: 'center' }}><b>ilvl</b></th>
-                  <th style={{ width: '25%', textAlign: 'center' }}><b>Healing</b></th>
-                  <th style={{ width: '25%', textAlign: 'center' }}><b>Overhealing</b></th>
-                </tr>
-              </thead>
-              <tbody>
-                {this.azerite.slice().reverse().map((trait, index) => {
-                  return (
-                    <tr key={index}>
-                      {numTraits > 1 && (<td>{index + 1}{nth(index + 1)}</td>)}
-                      <td>{trait.itemlevel}</td>
-                      <td>{formatNumber(trait.healing)}</td>
-                      <td>{formatPercentage(trait.overhealing / (trait.healing + trait.overhealing))}%</td>
-                    </tr>
-                  );
-                })}
-              </tbody>
-            </table>
-          </>
+            <div className="flex-sub text-right">
+              <ItemHealingDone amount={this.totalHealing} />
+            </div>
+          </div>
+          <table className="data-table compact" style={{ textAlign: 'center', marginBottom: 0 }}>
+            <thead>
+              <tr>
+                {numTraits > 1 && (<th style={{ width: '25%', textAlign: 'center' }}><b>Trait</b></th>)}
+                <th style={{ width: '25%', textAlign: 'center' }}><b>ilvl</b></th>
+                <th style={{ width: '25%', textAlign: 'center' }}><b>Healing</b></th>
+                <th style={{ width: '25%', textAlign: 'center' }}><b>Overhealing</b></th>
+              </tr>
+            </thead>
+            <tbody>
+              {this.azerite.slice().reverse().map((trait, index) => {
+                return (
+                  <tr key={index}>
+                    {numTraits > 1 && (<td>{index + 1}{nth(index + 1)}</td>)}
+                    <td>{trait.itemlevel}</td>
+                    <td>{formatNumber(trait.healing)}</td>
+                    <td>{formatPercentage(trait.overhealing / (trait.healing + trait.overhealing))}%</td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
         </Statistic>
       );
     } else {
