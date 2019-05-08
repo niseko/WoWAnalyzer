@@ -25,6 +25,7 @@ export default {
     id: 2484,
     name: 'Earthbind Totem',
     icon: 'spell_nature_strengthofearthtotem02',
+    manaCost: 500,
   },
   RESONANCE_TOTEM: {
     id: 262417,
@@ -35,6 +36,7 @@ export default {
     id: 370,
     name: 'Purge',
     icon: 'spell_nature_purge',
+    manaCost: 2000,
   },
   FAR_SIGHT: {
     id: 6196,
@@ -156,6 +158,12 @@ export default {
     name: 'Lava Burst',
     icon: 'spell_shaman_lavaburst',
     manaCost: 1200,
+    coefficient: 0.53125,
+  },
+  LAVA_BURST_DAMAGE: {
+    id: 285452,
+    name: 'Lava Burst',
+    icon: 'spell_shaman_lavaburst',
   },
   LAVA_BURST_OVERLOAD: {
     id: 77451,
@@ -707,6 +715,11 @@ export default {
   },
   ASCENDANCE_HEAL: {
     id: 114083,
+    name: 'Ascendance',
+    icon: 'spell_fire_elementaldevastation',
+  },
+  ASCENDANCE_INITIAL: {
+    id: 294020,
     name: 'Ascendance',
     icon: 'spell_fire_elementaldevastation',
   },

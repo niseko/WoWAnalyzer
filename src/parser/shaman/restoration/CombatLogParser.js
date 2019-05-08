@@ -27,6 +27,7 @@ import StatValues from './modules/features/StatValues';
 
 import TidalWaves from './modules/features/TidalWaves';
 import CastBehavior from './modules/features/CastBehavior';
+import FeedingDone from './modules/features/FeedingDone';
 // Talents
 import TalentStatisticBox from './modules/talents/TalentStatisticBox';
 import Torrent from './modules/talents/Torrent';
@@ -63,6 +64,8 @@ import StaticCharge from '../shared/talents/StaticCharge';
 import AstralShift from '../shared/spells/AstralShift';
 import PackSpirit from '../shared/azerite/PackSpirit';
 import SereneSpirit from '../shared/azerite/SereneSpirit';
+import IgneousPotential from '../shared/azerite/IgneousPotential';
+import SynapseShock from '../shared/azerite/SynapseShock';
 
 import CloudburstNormalizer from './normalizers/CloudburstNormalizer';
 
@@ -95,6 +98,7 @@ class CombatLogParser extends CoreCombatLogParser {
     checklist: Checklist,
     spellUsable: SpellUsable,
     statValues: StatValues,
+    feedingDone: FeedingDone,
 
     // Talents:
     torrent: Torrent,
@@ -135,6 +139,8 @@ class CombatLogParser extends CoreCombatLogParser {
     astralShift: AstralShift,
     packSpirit: PackSpirit,
     sereneSpirit: SereneSpirit,
+    igneousPotential: IgneousPotential,
+    synapseShock: SynapseShock,
 
     // Normalizers:
     cloudburstNormalizer: CloudburstNormalizer,

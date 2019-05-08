@@ -26,13 +26,6 @@ class Feeding extends React.Component {
     cooldownThroughputTracker: PropTypes.object,
   };
 
-  constructor() {
-    super();
-    this.state = {
-      expand: false,
-    };
-  }
-
   render() {
     const { cooldownThroughputTracker } = this.props;
 
@@ -53,8 +46,8 @@ class Feeding extends React.Component {
           },
         ]).map((category) => {
           category.max = category.feed.reduce((a, b) => {
-            const aHealing = this.state.expand ? a.mergedHealing : a.healing;
-            const bHealing = this.state.expand ? b.mergedHealing : b.healing;
+            const aHealing = a.healing;
+            const bHealing = b.healing;
             return (aHealing > bHealing) ? a : b;
           }, 0).healing;
           return category;
@@ -81,12 +74,11 @@ class Feeding extends React.Component {
                     const healingB = category.feed[b].healing;
                     return healingA > healingB ? -1 : (healingB > healingA ? 1 : 0);
                   })
-                  .filter(spellId => (!this.state.expand) || category.feed[spellId].mergedHealing > 0)
                   .map((spellId) => {
                     const ability = category.feed[spellId];
-                    const healing = this.state.expand ? ability.mergedHealing : ability.healing;
-                    const effectiveHealing = this.state.expand ? ability.mergedEffectiveHealing : ability.effectiveHealing;
-                    const totalHealing = this.state.expand ? category.totals.mergedTotal : category.totals.total;
+                    const healing = ability.healing;
+                    const effectiveHealing = ability.effectiveHealing;
+                    const totalHealing = category.totals.total;
 
                     return (
                       <tr key={`${category.name} ${ability.name}`}>
@@ -117,10 +109,10 @@ class Feeding extends React.Component {
                   <td />
                   <td className="text-right"><b>Total:</b></td>
                   <td className="text-left">
-                    <b>{formatNumber(this.state.expand ? category.totals.mergedTotal : category.totals.total)}</b>
+                    <b>{formatNumber(category.totals.total)}</b>
                   </td>
                   <td className="text-center">
-                    <b>{formatNumber(this.state.expand ? category.totals.mergedTotalEffective : category.totals.totalEffective)}</b>
+                    <b>{formatNumber(category.totals.totalEffective)}</b>
                   </td>
                 </tr>
 

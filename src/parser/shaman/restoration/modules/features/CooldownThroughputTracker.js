@@ -81,6 +81,7 @@ class CooldownThroughputTracker extends CoreCooldownThroughputTracker {
             feed[spellId] = [];
             feed[spellId].healing = 0;
             feed[spellId].effectiveHealing = 0;
+            feed[spellId].ability = cooldown.feed[spellId].ability;
             feed[spellId].name = cooldown.feed[spellId].name;
             feed[spellId].icon = cooldown.feed[spellId].icon;
           }
@@ -284,6 +285,7 @@ class CooldownThroughputTracker extends CoreCooldownThroughputTracker {
         if (!cooldown.feed[spellId]) {
           cooldown.feed[spellId] = [];
           cooldown.feed[spellId].healing = 0;
+          cooldown.feed[spellId].ability = event.ability;
           cooldown.feed[spellId].name = event.ability.name;
           cooldown.feed[spellId].icon = event.ability.abilityIcon;
         }
