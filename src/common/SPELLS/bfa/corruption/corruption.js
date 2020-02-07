@@ -132,4 +132,14 @@ export default {
     name: 'Deadly Momentum',
     icon: 'ability_hunter_raptorstrike',
   },
+  FLASH_OF_INSIGHT_BUFF: {
+    id: 316744,
+    name: 'Flash of Insight',
+    icon: 'spell_shadow_unholyfrenzy',
+  },
+  FLASH_OF_INSIGHT_T1: {
+    id: 318299,
+    name: 'Flash of Insight',
+    icon: 'spell_shadow_unholyfrenzy',
+  },
 };

@@ -7,7 +7,7 @@ import RACES from 'game/RACES';
 import Analyzer from 'parser/core/Analyzer';
 import EventEmitter from 'parser/core/modules/EventEmitter';
 
-const debug = false;
+const debug = true;
 
 // TODO: stat constants somewhere else? they're largely copied from combatant
 class StatTracker extends Analyzer {
@@ -147,7 +147,7 @@ class StatTracker extends Analyzer {
 
     /****************************************\
      *                    BFA:                *
-     \****************************************/
+    \****************************************/
 
     // region Azerite Traits
     // region General
@@ -176,6 +176,9 @@ class StatTracker extends Analyzer {
     [SPELLS.QUICK_NAVIGATION_BUFF_SMALL.id]: { haste: 50 },
     [SPELLS.QUICK_NAVIGATION_BUFF_BIG.id]: { haste: 600 },
     264878: { crit: 650 }, // Crow's Nest Scope
+    300693: { intellect: 264 }, // machinistts
+    298431: { crit: 170 },
+    300762: { mastery: 170 },
     //endregion
 
     // DEFINING STAT BUFFS HERE IS DEPRECATED.
@@ -632,7 +635,7 @@ class StatTracker extends Analyzer {
   on_toPlayer_heal(event) {
     this._updateIntellect(event);
   }
-
+  _count = 0;
   _updateIntellect(event) {
     // updates intellect values directly from game events
     if (!event.spellPower) {
@@ -641,9 +644,16 @@ class StatTracker extends Analyzer {
     const currentIntellect = this.currentIntellectRating;
     const actualIntellect = event.spellPower;
     if (currentIntellect !== actualIntellect) {
-      debug && this.error(`Intellect rating calculated with StatTracker is different from actual Intellect from events! StatTracker: ${currentIntellect}, actual: ${actualIntellect}`);
+      //this.log(++this._count);
+      this.error(`Intellect rating calculated with StatTracker is different from actual Intellect from events! StatTracker: ${currentIntellect}, actual: ${actualIntellect}`);
       const delta = actualIntellect - currentIntellect;
-      this.forceChangeStats({ intellect: delta });
+      //this.forceChangeStats({ intellect: delta });
+      this._currentStats.intellect += delta;
+      console.log(`StatTracker: FORCED CHANGE from spellPower - Change: INT=${delta}`);
+      debug && this._debugPrintStats(this._currentStats);
+      // trigger change stats
+    } else {
+      //this.error(`StatTracker: ${currentIntellect}, actual: ${actualIntellect}`);
     }
   }
 
@@ -690,7 +700,7 @@ class StatTracker extends Analyzer {
     const delta = {
       strength: this._getBuffValue(change, change.strength) * factor,
       agility: this._getBuffValue(change, change.agility) * factor,
-      intellect: this._getBuffValue(change, change.intellect) * factor,
+      intellect: Math.round(this._getBuffValue(change, change.intellect) * factor * 1.05 * 1.1),
       stamina: this._getBuffValue(change, change.stamina) * factor,
       crit: this._getBuffValue(change, change.crit) * factor,
       haste: this._getBuffValue(change, change.haste) * factor,
