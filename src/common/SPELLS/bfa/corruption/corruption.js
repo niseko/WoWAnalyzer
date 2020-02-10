@@ -142,4 +142,64 @@ export default {
     name: 'Flash of Insight',
     icon: 'spell_shadow_unholyfrenzy',
   },
+  VERSATILE_T1: {
+    id: 315549,
+    name: 'Versatile',
+    icon: 'spell_arcane_arcanetactics',
+  },
+  VERSATILE_T2: {
+    id: 315552,
+    name: 'Versatile',
+    icon: 'spell_arcane_arcanetactics',
+  },
+  VERSATILE_T3: {
+    id: 315553,
+    name: 'Versatile',
+    icon: 'spell_arcane_arcanetactics',
+  },
+  SEVERE_T1: {
+    id: 315554,
+    name: 'Severe',
+    icon: 'ability_priest_shadowyapparition',
+  },
+  SEVERE_T2: {
+    id: 315557,
+    name: 'Severe',
+    icon: 'ability_priest_shadowyapparition',
+  },
+  SEVERE_T3: {
+    id: 315558,
+    name: 'Severe',
+    icon: 'ability_priest_shadowyapparition',
+  },
+  MASTERFUL_T1: {
+    id: 315529,
+    name: 'Masterful',
+    icon: 'ability_rogue_sinistercalling',
+  },
+  MASTERFUL_T2: {
+    id: 315530,
+    name: 'Masterful',
+    icon: 'ability_rogue_sinistercalling',
+  },
+  MASTERFUL_T3: {
+    id: 315531,
+    name: 'Masterful',
+    icon: 'ability_rogue_sinistercalling',
+  },
+  EXPEDIENT_T1: {
+    id: 315544,
+    name: 'Expedient',
+    icon: 'ability_mage_netherwindpresence',
+  },
+  EXPEDIENT_T2: {
+    id: 315545,
+    name: 'Expedient',
+    icon: 'ability_mage_netherwindpresence',
+  },
+  EXPEDIENT_T3: {
+    id: 315546,
+    name: 'Expedient',
+    icon: 'ability_mage_netherwindpresence',
+  },
 };

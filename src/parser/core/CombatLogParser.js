@@ -183,6 +183,10 @@ import DeadlyMomentum from '../shared/modules/spells/bfa/corruptions/DeadlyMomen
 import VoidRitual from '../shared/modules/spells/bfa/corruptions/VoidRitual';
 import Siphoner from '../shared/modules/spells/bfa/corruptions/Siphoner';
 import FlashOfInsight from '../shared/modules/spells/bfa/corruptions/FlashOfInsight';
+import Versatile from '../shared/modules/spells/bfa/corruptions/Versatile';
+import Severe from '../shared/modules/spells/bfa/corruptions/Severe';
+import Masterful from '../shared/modules/spells/bfa/corruptions/Masterful';
+import Expedient from '../shared/modules/spells/bfa/corruptions/Expedient';
 
 import ParseResults from './ParseResults';
 import EventsNormalizer from './EventsNormalizer';
@@ -391,6 +395,10 @@ class CombatLogParser {
     voidRitual: VoidRitual,
     siphoner: Siphoner,
     flashOfInsight: FlashOfInsight,
+    versatile: Versatile,
+    severe: Severe,
+    masterful: Masterful,
+    expedient: Expedient,
   };
   // Override this with spec specific modules when extending
   static specModules = {};
