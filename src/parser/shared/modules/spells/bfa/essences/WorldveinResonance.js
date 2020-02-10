@@ -67,7 +67,7 @@ class WorldveinResonance extends Analyzer {
       }
     });
 
-    this._statPerShard = calculatePrimaryStat(455, 213, this.selectedCombatant.neck.itemLevel);
+    this._statPerShard = calculatePrimaryStat(400, 127, this.selectedCombatant.neck.itemLevel);
     debug && this.log(`stat per shard: ${this._statPerShard}`);
 
     this.statTracker.add(SPELLS.LIFEBLOOD_BUFF.id, {

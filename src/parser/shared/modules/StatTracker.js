@@ -7,6 +7,8 @@ import RACES from 'game/RACES';
 import Analyzer from 'parser/core/Analyzer';
 import EventEmitter from 'parser/core/modules/EventEmitter';
 
+const ARMOR_INT_BONUS = .05;
+
 const debug = true;
 
 // TODO: stat constants somewhere else? they're largely copied from combatant
@@ -348,6 +350,27 @@ class StatTracker extends Analyzer {
   _pullStats = {};
   _currentStats = {};
 
+  statMultiplier = {
+    strength: 1,
+    agility: 1,
+    intellect: 1,
+    stamina: 1,
+    crit: 1,
+    haste: 1, // should usually be done through the haste module
+    mastery: 1,
+    versatility: 1,
+    avoidance: 1,
+    leech: 1,
+    speed: 1,
+    armor: 1,
+  };
+  statMultiplierBuffs = { // double check that these actually multiply with temporary buffs as an augment
+    [SPELLS.ARCANE_INTELLECT.id]: { intellect: 1.1 },
+    264760: { intellect: 1.07 }, // War-Scroll of Intellect
+    [SPELLS.BATTLE_SHOUT.id]: { strength: 1.1, agility: 1.1 },
+    264761: { strength: 1.07, agility: 1.07 }, // War-Scroll of Battle Shout
+  }
+
   constructor(...args) {
     super(...args);
     // TODO: Use combatantinfo event directly
@@ -376,6 +399,8 @@ class StatTracker extends Analyzer {
       ...this._pullStats,
     };
 
+    this.addStatMultiplier("intellect", 1 + ARMOR_INT_BONUS); // Really hoping people don't run around with wrong armor types
+
     debug && this._debugPrintStats(this._currentStats);
   }
 
@@ -401,6 +426,35 @@ class StatTracker extends Analyzer {
       throw new Error(`Stat buff ${buffId} uses item argument, but does not provide item ID`);
     }
     this.statBuffs[buffId] = stats;
+  }
+
+  addStatMultiplier(stat, mult, changeCurrentStats = false) {
+    debug && this.log(`add before ${this.statMultiplier[stat]} - ${this._currentStats[stat]}`);
+
+    this.statMultiplier[stat] *= mult;
+    if (changeCurrentStats) {
+      const before = this._currentStats[stat];
+      this._currentStats[stat] *= mult;
+      this._currentStats[stat] = Math.round(this._currentStats[stat]);
+      return this._currentStats[stat] - before;
+    }
+    debug && this.log(`after ${this.statMultiplier[stat]} - ${this._currentStats[stat]}`);
+
+    return 0;
+  }
+  removeStatMultiplier(stat, mult, changeCurrentStats = false) {
+    debug && this.log(`remove before ${this.statMultiplier[stat]} - ${this._currentStats[stat]}`);
+
+    this.statMultiplier[stat] /= mult;
+    if (changeCurrentStats) {
+      const before = this._currentStats[stat];
+      this._currentStats[stat] /= mult;
+      this._currentStats[stat] = Math.round(this._currentStats[stat]);
+      return before - this._currentStats[stat];
+    }
+    debug && this.log(`after ${this.statMultiplier[stat]} - ${this._currentStats[stat]}`);
+
+    return 0;
   }
 
   applySpecModifiers() {
@@ -644,16 +698,13 @@ class StatTracker extends Analyzer {
     const currentIntellect = this.currentIntellectRating;
     const actualIntellect = event.spellPower;
     if (currentIntellect !== actualIntellect) {
-      //this.log(++this._count);
-      this.error(`Intellect rating calculated with StatTracker is different from actual Intellect from events! StatTracker: ${currentIntellect}, actual: ${actualIntellect}`);
+      debug && this.error(`Intellect rating calculated with StatTracker is different from actual Intellect from events! StatTracker: ${currentIntellect}, actual: ${actualIntellect}`);
       const delta = actualIntellect - currentIntellect;
       //this.forceChangeStats({ intellect: delta });
       this._currentStats.intellect += delta;
-      console.log(`StatTracker: FORCED CHANGE from spellPower - Change: INT=${delta}`);
+      debug && this.log(`StatTracker: FORCED CHANGE from spellPower - Change: INT=${delta}`);
       debug && this._debugPrintStats(this._currentStats);
       // trigger change stats
-    } else {
-      //this.error(`StatTracker: ${currentIntellect}, actual: ${actualIntellect}`);
     }
   }
 
@@ -679,6 +730,7 @@ class StatTracker extends Analyzer {
   _changeBuffStack(event) {
     const spellId = event.ability.guid;
     const statBuff = this.statBuffs[spellId];
+    const statMult = this.statMultiplierBuffs[spellId];
     if (statBuff) {
       // ignore prepull buff application, as they're already accounted for in combatantinfo
       // we have to check the stacks count because Entities incorrectly copies the prepull property onto changes and removal following the application
@@ -694,13 +746,40 @@ class StatTracker extends Analyzer {
       debug && this._debugPrintStats(this._currentStats);
       this._triggerChangeStats(event, before, delta, after);
     }
+    if (statMult) {
+      // ignore prepull buff application, as they're already accounted for in combatantinfo
+      // we have to check the stacks count because Entities incorrectly copies the prepull property onto changes and removal following the application
+      if (event.prepull && event.oldStacks === 0) {
+        debug && console.log(`StatTracker prepull application IGNORED for ${SPELLS[spellId] ? SPELLS[spellId].name : spellId}`);
+        for (const stat in statMult) {
+          this.addStatMultiplier(stat, statMult[stat]);
+        }
+        return;
+      }
+
+      const before = Object.assign({}, this._currentStats);
+      let delta = null;
+
+      if (event.newStacks > event.oldStacks) {
+        for (const stat in statMult) {
+          this.addStatMultiplier(stat, statMult[stat], true);
+        }
+      } else if (event.newStacks < event.oldStacks) {
+        for (const stat in statMult) {
+          this.removeStatMultiplier(stat, statMult[stat], true);
+        }
+      }
+      const after = Object.assign({}, this._currentStats);
+
+      this._triggerChangeStats(event, before, delta, after);
+    }
   }
 
   _changeStats(change, factor) {
     const delta = {
       strength: this._getBuffValue(change, change.strength) * factor,
       agility: this._getBuffValue(change, change.agility) * factor,
-      intellect: Math.round(this._getBuffValue(change, change.intellect) * factor * 1.05 * 1.1),
+      intellect: this._getBuffValue(change, change.intellect) * factor,
       stamina: this._getBuffValue(change, change.stamina) * factor,
       crit: this._getBuffValue(change, change.crit) * factor,
       haste: this._getBuffValue(change, change.haste) * factor,
@@ -713,7 +792,7 @@ class StatTracker extends Analyzer {
     };
 
     Object.keys(this._currentStats).forEach(key => {
-      this._currentStats[key] += delta[key];
+      this._currentStats[key] += Math.round(delta[key] * this.statMultiplier[key]);
     });
 
     return delta;
