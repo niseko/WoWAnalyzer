@@ -34,11 +34,12 @@ class StatTracker extends Analyzer {
     [SPELLS.BATTLE_POTION_OF_INTELLECT.id]: { intellect: 900 },
     [SPELLS.BATTLE_POTION_OF_AGILITY.id]: { agility: 900 },
     [SPELLS.BATTLE_POTION_OF_STAMINA.id]: { stamina: 1100 },
-    [SPELLS.SUPERIOR_BATTLE_POTION_OF_STRENGTH.id]: { strength: 1215 }, // Superior Battle Potion of Strength
-    [SPELLS.SUPERIOR_BATTLE_POTION_OF_AGILITY.id]: { agility: 1215 }, // Superior Battle Potion of Agility
-    [SPELLS.SUPERIOR_BATTLE_POTION_OF_INTELLECT.id]: { intellect: 1215 }, // Superior Battle Potion of Intellect
-    [SPELLS.SUPERIOR_BATTLE_POTION_OF_STAMINA.id]: { stamina: 1485 }, // Superior Battle Potion of Stamina
-    [SPELLS.SUPERIOR_STEELSKIN_POTION.id]: { armor: 1215 }, // Superior Steelskin Potion
+    [SPELLS.STEELSKIN_POTION.id]: { armor: 900 },
+    [SPELLS.SUPERIOR_BATTLE_POTION_OF_STRENGTH.id]: { strength: 1215 },
+    [SPELLS.SUPERIOR_BATTLE_POTION_OF_AGILITY.id]: { agility: 1215 },
+    [SPELLS.SUPERIOR_BATTLE_POTION_OF_INTELLECT.id]: { intellect: 1215 },
+    [SPELLS.SUPERIOR_BATTLE_POTION_OF_STAMINA.id]: { stamina: 1485 },
+    [SPELLS.SUPERIOR_STEELSKIN_POTION.id]: { armor: 1215 },
     // endregion
 
     // region Runes
@@ -105,8 +106,6 @@ class StatTracker extends Analyzer {
     [SPELLS.WELL_FED_SEASONED_STEAK_AND_POTATOES.id]: { stamina: 150 },
     //endregion
 
-    // region Dungeon Trinkets
-
     // BFA quests
     [SPELLS.DIEMETRADON_FRENZY.id]: {
       itemId: ITEMS.ENGRANGED_DIEMETRADON_FIN.id,
@@ -164,7 +163,7 @@ class StatTracker extends Analyzer {
     // endregion
     // region Warlock
     // endregion
-    //region Death Knight
+    // region Death Knight
     // endregion
     // region Monk
     // endregion
@@ -308,31 +307,6 @@ class StatTracker extends Analyzer {
       itemId: ITEMS.AZEROKKS_RESONATING_HEART.id,
       agility: (_, item) => calculatePrimaryStat(300, 593, item.itemLevel),
     },
-    // endregion
-    // endregion
-
-    // region Consumables
-    //region Flasks
-    [SPELLS.FLASK_OF_THE_CURRENTS.id]: { agility: 238 },
-    [SPELLS.FLASK_OF_THE_UNDERTOW.id]: { strength: 238 },
-    [SPELLS.FLASK_OF_ENDLESS_FATHOMS.id]: { intellect: 238 },
-    [SPELLS.FLASK_OF_THE_VAST_HORIZON.id]: { stamina: 357 },
-    [SPELLS.GREATER_FLASK_OF_THE_CURRENTS.id]: { agility: 360 },
-    [SPELLS.GREATER_FLASK_OF_ENDLESS_FATHOMS.id]: { intellect: 360 },
-    [SPELLS.GREATER_FLASK_OF_THE_UNDERTOW.id]: { strength: 360 },
-    [SPELLS.GREATER_FLASK_OF_THE_VAST_HORIZON.id]: { stamina: 540 },
-    // endregion
-    // region Potions
-    [SPELLS.BATTLE_POTION_OF_STRENGTH.id]: { strength: 900 }, // Battle Potion of Strength
-    [SPELLS.BATTLE_POTION_OF_AGILITY.id]: { agility: 900 }, // Battle Potion of Agility
-    [SPELLS.BATTLE_POTION_OF_INTELLECT.id]: { intellect: 900 }, // Battle Potion of Intellect
-    [SPELLS.BATTLE_POTION_OF_STAMINA.id]: { stamina: 1100 }, // Battle Potion of Stamina
-    [SPELLS.STEELSKIN_POTION.id]: { armor: 900 }, // Steelskin Potion
-    [SPELLS.SUPERIOR_BATTLE_POTION_OF_STRENGTH.id]: { strength: 1215 }, // Superior Battle Potion of Strength
-    [SPELLS.SUPERIOR_BATTLE_POTION_OF_AGILITY.id]: { agility: 1215 }, // Superior Battle Potion of Agility
-    [SPELLS.SUPERIOR_BATTLE_POTION_OF_INTELLECT.id]: { intellect: 1215 }, // Superior Battle Potion of Intellect
-    [SPELLS.SUPERIOR_BATTLE_POTION_OF_STAMINA.id]: { stamina: 1485 }, // Superior Battle Potion of Stamina
-    [SPELLS.SUPERIOR_STEELSKIN_POTION.id]: { armor: 1215 }, // Superior Steelskin Potion
     // endregion
     // endregion
 
@@ -771,7 +745,7 @@ class StatTracker extends Analyzer {
       }
       const after = Object.assign({}, this._currentStats);
 
-      this._triggerChangeStats(event, before, delta, after);
+      //this._triggerChangeStats(event, before, delta, after);
     }
   }
 
