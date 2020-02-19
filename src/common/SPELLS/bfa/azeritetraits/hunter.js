@@ -125,12 +125,31 @@ export default {
     name: 'Primeval Intuition',
     icon: 'ability_hunter_silenthunter',
   },
-
+  WILDFIRE_CLUSTER: {
+    id: 272742,
+    name: 'Wildfire Cluster',
+    icon: 'spell_mage_flameorb',
+  },
+  WILDFIRE_CLUSTER_DAMAGE: {
+    id: 272745,
+    name: 'Wildfire Cluster',
+    icon: 'spell_mage_flameorb',
+  },
 
   // shared
   DIRE_CONSEQUENCES: {
     id: 287093,
     name: 'Dire Consequences',
     icon: 'ability_hunter_longevity',
+  },
+  RAPID_RELOAD: {
+    id: 278530,
+    name: 'Rapid Reload',
+    icon: 'ability_upgrademoonglaive',
+  },
+  RAPID_RELOAD_DAMAGE: {
+    id: 278565,
+    name: 'Multi-Shot Rapid Relooad',
+    icon: 'ability_upgrademoonglaive',
   },
 };

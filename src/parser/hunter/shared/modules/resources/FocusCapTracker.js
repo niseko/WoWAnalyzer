@@ -31,7 +31,6 @@ class FocusCapTracker extends RegenResourceCapTracker {
   static resourceType = RESOURCE_TYPES.FOCUS;
   static baseRegenRate = BASE_FOCUS_REGEN;
   static isRegenHasted = true;
-  static cumulativeEventWindow = 400;
 
   naturalRegenRate() {
     const regen = super.naturalRegenRate();
@@ -60,12 +59,27 @@ class FocusCapTracker extends RegenResourceCapTracker {
     this.bySecond[secondsIntoFight] = (this.bySecond[secondsIntoFight] || this.current);
   }
 
-  on_byPlayer_Damage(event) {
+  on_byPlayer_damage(event) {
     const secondsIntoFight = Math.floor((event.timestamp - this.owner.fight.start_time) / 1000);
     this.bySecond[secondsIntoFight] = (this.bySecond[secondsIntoFight] || this.current);
   }
 
-  get suggestionThresholds() {
+  on_byPlayer_heal(event) {
+    const secondsIntoFight = Math.floor((event.timestamp - this.owner.fight.start_time) / 1000);
+    this.bySecond[secondsIntoFight] = (this.bySecond[secondsIntoFight] || this.current);
+  }
+
+  on_byPlayer_applybuff(event) {
+    const secondsIntoFight = Math.floor((event.timestamp - this.owner.fight.start_time) / 1000);
+    this.bySecond[secondsIntoFight] = (this.bySecond[secondsIntoFight] || this.current);
+  }
+
+  on_byPlayer_removebuff(event) {
+    const secondsIntoFight = Math.floor((event.timestamp - this.owner.fight.start_time) / 1000);
+    this.bySecond[secondsIntoFight] = (this.bySecond[secondsIntoFight] || this.current);
+  }
+
+  get focusNaturalRegenWasteThresholds() {
     return {
       actual: 1 - this.wastedPercent,
       isLessThan: {
@@ -78,7 +92,7 @@ class FocusCapTracker extends RegenResourceCapTracker {
   }
 
   suggestions(when) {
-    when(this.suggestionThresholds).addSuggestion((suggest, actual, recommended) => {
+    when(this.focusNaturalRegenWasteThresholds).addSuggestion((suggest, actual, recommended) => {
       return suggest(
         <>
           You're allowing your focus to reach its cap. While at its maximum value you miss out on the focus that would have regenerated. Although it can be beneficial to let focus pool ready to be used at the right time, try to spend some before it reaches the cap.
