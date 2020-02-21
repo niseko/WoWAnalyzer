@@ -429,31 +429,22 @@ class StatTracker extends Analyzer {
   }
 
   addStatMultiplier(stat, mult, changeCurrentStats = false) {
-    debug && this.log(`add before ${this.statMultiplier[stat]} - ${this._currentStats[stat]} - ${mult}`);
-
+    debug && this.log(`addStatMultiplier before ${this.statMultiplier[stat]} - ${this._currentStats[stat]} - ${mult}`);
     this.statMultiplier[stat] *= mult;
     if (changeCurrentStats) {
-      const before = this._currentStats[stat];
-      this._currentStats[stat] *= mult;
-      const delta = this._currentStats[stat] * mult - this._currentStats[stat];
-      this.log(delta);
-      this._currentStats[stat] = Math.round(this._currentStats[stat]);
-
+      const delta = Math.round(this._currentStats[stat] * mult - this._currentStats[stat]);
+      this.forceChangeStats({ [stat]: delta}, null, true);
     }
     debug && this.log(`after ${this.statMultiplier[stat]} - ${this._currentStats[stat]}`);
   }
   removeStatMultiplier(stat, mult, changeCurrentStats = false) {
-    debug && this.log(`remove before ${this.statMultiplier[stat]} - ${this._currentStats[stat]}`);
-
+    debug && this.log(`removeStatMultiplier before ${this.statMultiplier[stat]} - ${this._currentStats[stat]}`);
     this.statMultiplier[stat] /= mult;
     if (changeCurrentStats) {
-      const before = this._currentStats[stat];
-      this._currentStats[stat] /= mult;
-      this._currentStats[stat] = Math.round(this._currentStats[stat]);
-
+      const delta = Math.round(this._currentStats[stat] / mult - this._currentStats[stat]);
+      this.forceChangeStats({ [stat]: delta}, null, true);
     }
     debug && this.log(`after ${this.statMultiplier[stat]} - ${this._currentStats[stat]}`);
-
   }
 
   applySpecModifiers() {
@@ -699,7 +690,7 @@ class StatTracker extends Analyzer {
     if (currentIntellect !== actualIntellect) {
       debug && this.error(`Intellect rating calculated with StatTracker is different from actual Intellect from events! StatTracker: ${currentIntellect}, actual: ${actualIntellect}`);
       const delta = actualIntellect - currentIntellect;
-      //this.forceChangeStats({ intellect: delta }, null, true); // need to figure out where this goes off tq3D9ajfr24nbHFX
+      this.forceChangeStats({ intellect: delta }, null, true);
     }
   }
 
@@ -751,10 +742,6 @@ class StatTracker extends Analyzer {
         }
         return;
       }
-
-      const before = Object.assign({}, this._currentStats);
-      let delta = null;
-
       if (event.newStacks > event.oldStacks) {
         for (const stat in statMult) {
           this.addStatMultiplier(stat, statMult[stat], true);
@@ -764,9 +751,9 @@ class StatTracker extends Analyzer {
           this.removeStatMultiplier(stat, statMult[stat], true);
         }
       }
-      const after = Object.assign({}, this._currentStats);
-
-      this._triggerChangeStats(event, before, delta, after);
+      debug && console.log(`StatTracker: (${event.oldStacks} -> ${event.newStacks}) ${SPELLS[spellId] ? SPELLS[spellId].name : spellId} @ ${formatMilliseconds(this.owner.fightDuration)}`);
+      debug && this._debugPrintStats(this._currentStats);
+      //this._triggerChangeStats(event, before, delta, after);
     }
   }
 
