@@ -32,9 +32,18 @@ class FlashOfInsight extends Analyzer {
       this.stack = event.stack;
       return;
     }
-    this.statTracker.removeStatMultiplier("intellect", (1 + this.stack / 100), true);
+    
+    this.statTracker.removeStatMultiplier("intellect", (1 + (this.stack / 100)), true);
+    this.statTracker.addStatMultiplier("intellect", (1 + (event.stack / 100)), true);
+
+    //if (event.stack > this.stack) { // THIS IS NOT THE SAME AS REMOVING AND THEN ADDING; FIX
+    //  this.log(`adding ${(event.stack - this.stack)}`);
+    //  this.statTracker.addStatMultiplier("intellect", (1 + ((event.stack - this.stack) / 100)), true);
+    //} else {
+    //  this.log(`removing ${(this.stack - event.stack)}`);
+    //  this.statTracker.removeStatMultiplier("intellect", (1 + ((this.stack - event.stack) / 100)), true);
+    //}
     this.stack = event.stack;
-    this.statTracker.addStatMultiplier("intellect", (1 + this.stack / 100), true);
   }
 
   // TODO add statistic

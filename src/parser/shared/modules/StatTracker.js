@@ -338,7 +338,7 @@ class StatTracker extends Analyzer {
     speed: 1,
     armor: 1,
   };
-  statMultiplierBuffs = { // double check that these actually multiply with temporary buffs as an augment
+  statMultiplierBuffs = {
     [SPELLS.ARCANE_INTELLECT.id]: { intellect: 1.1 },
     264760: { intellect: 1.07 }, // War-Scroll of Intellect
     [SPELLS.BATTLE_SHOUT.id]: { strength: 1.1, agility: 1.1 },
@@ -403,18 +403,18 @@ class StatTracker extends Analyzer {
   }
 
   addStatMultiplier(stat, mult, changeCurrentStats = false) {
-    debug && this.log(`add before ${this.statMultiplier[stat]} - ${this._currentStats[stat]}`);
+    debug && this.log(`add before ${this.statMultiplier[stat]} - ${this._currentStats[stat]} - ${mult}`);
 
     this.statMultiplier[stat] *= mult;
     if (changeCurrentStats) {
       const before = this._currentStats[stat];
       this._currentStats[stat] *= mult;
+      const delta = this._currentStats[stat] * mult - this._currentStats[stat];
+      this.log(delta);
       this._currentStats[stat] = Math.round(this._currentStats[stat]);
-      return this._currentStats[stat] - before;
+
     }
     debug && this.log(`after ${this.statMultiplier[stat]} - ${this._currentStats[stat]}`);
-
-    return 0;
   }
   removeStatMultiplier(stat, mult, changeCurrentStats = false) {
     debug && this.log(`remove before ${this.statMultiplier[stat]} - ${this._currentStats[stat]}`);
@@ -424,11 +424,10 @@ class StatTracker extends Analyzer {
       const before = this._currentStats[stat];
       this._currentStats[stat] /= mult;
       this._currentStats[stat] = Math.round(this._currentStats[stat]);
-      return before - this._currentStats[stat];
+
     }
     debug && this.log(`after ${this.statMultiplier[stat]} - ${this._currentStats[stat]}`);
 
-    return 0;
   }
 
   applySpecModifiers() {
@@ -674,11 +673,7 @@ class StatTracker extends Analyzer {
     if (currentIntellect !== actualIntellect) {
       debug && this.error(`Intellect rating calculated with StatTracker is different from actual Intellect from events! StatTracker: ${currentIntellect}, actual: ${actualIntellect}`);
       const delta = actualIntellect - currentIntellect;
-      //this.forceChangeStats({ intellect: delta });
-      this._currentStats.intellect += delta;
-      debug && this.log(`StatTracker: FORCED CHANGE from spellPower - Change: INT=${delta}`);
-      debug && this._debugPrintStats(this._currentStats);
-      // trigger change stats
+      //this.forceChangeStats({ intellect: delta }, null, true); // need to figure out where this goes off tq3D9ajfr24nbHFX
     }
   }
 
@@ -689,9 +684,9 @@ class StatTracker extends Analyzer {
    * eventReason is the WCL event object that caused this change, it is not required.
    */
   // For an example of how / why this function would be used, see the CharmOfTheRisingTide module.
-  forceChangeStats(change, eventReason) {
+  forceChangeStats(change, eventReason, withoutMultipliers = false) {
     const before = Object.assign({}, this._currentStats);
-    const delta = this._changeStats(change, 1);
+    const delta = this._changeStats(change, 1, withoutMultipliers);
     const after = Object.assign({}, this._currentStats);
     if (debug) {
       const spellName = eventReason && eventReason.ability ? eventReason.ability.name : 'unspecified';
@@ -749,7 +744,8 @@ class StatTracker extends Analyzer {
     }
   }
 
-  _changeStats(change, factor) {
+  // withoutMultipliers should be a rare exception where you have already buffed values
+  _changeStats(change, factor, withoutMultipliers = false) {
     const delta = {
       strength: this._getBuffValue(change, change.strength) * factor,
       agility: this._getBuffValue(change, change.agility) * factor,
@@ -766,7 +762,7 @@ class StatTracker extends Analyzer {
     };
 
     Object.keys(this._currentStats).forEach(key => {
-      this._currentStats[key] += Math.round(delta[key] * this.statMultiplier[key]);
+      this._currentStats[key] += withoutMultipliers ? delta[key] : Math.round(delta[key] * this.statMultiplier[key]);
     });
 
     return delta;
