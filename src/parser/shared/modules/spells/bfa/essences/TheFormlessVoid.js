@@ -27,7 +27,12 @@ class TheFormlessVoid extends Analyzer {
       return;
     }
     this.hasMajor = this.selectedCombatant.hasMajor(SPELLS.THE_FORMLESS_VOID.traitId);
-    this.primaryStatBuff = calculatePrimaryStat(440, 375, this.selectedCombatant.neck.itemLevel);
+
+    if (this.selectedCombatant.essenceRank(SPELLS.THE_FORMLESS_VOID.traitId) < 2) {
+      this.primaryStatBuff = calculatePrimaryStat(440, 300, this.selectedCombatant.neck.itemLevel);
+    } else {
+      this.primaryStatBuff = calculatePrimaryStat(440, 375, this.selectedCombatant.neck.itemLevel);
+    }
     this.hasteBuff = calculatePrimaryStat(440, 68, this.selectedCombatant.neck.itemLevel);
 
     this.statTracker.add(SPELLS.SYMBIOTIC_PRESENCE_BUFF.id, {
@@ -43,15 +48,15 @@ class TheFormlessVoid extends Analyzer {
   statistic() {
     const rank = this.selectedCombatant.essenceRank(SPELLS.THE_FORMLESS_VOID.traitId);
     return (
-        <ItemStatistic flexible>
-          <div className="pad">
-            <label><SpellLink id={SPELLS.THE_FORMLESS_VOID.id} /> <small>Minor Rank {rank}</small></label>
-            <div className="value">
-              <PrimaryStatIcon stat={this.selectedCombatant.spec.primaryStat} /> {formatNumber(this.minorBuffUptime * this.primaryStatBuff)} <small>average {this.selectedCombatant.spec.primaryStat} gained</small><br />
-              <HasteIcon stat={this.selectedCombatant.spec.primaryStat} /> {formatNumber(this.minorBuffUptime * this.hasteBuff)} <small>average Haste gained</small><br />
-            </div>
+      <ItemStatistic flexible>
+        <div className="pad">
+          <label><SpellLink id={SPELLS.THE_FORMLESS_VOID.id} /> <small>Minor Rank {rank}</small></label>
+          <div className="value">
+            <PrimaryStatIcon stat={this.selectedCombatant.spec.primaryStat} /> {formatNumber(this.minorBuffUptime * this.primaryStatBuff)} <small>average {this.selectedCombatant.spec.primaryStat} gained</small><br />
+            {rank >= 3 && (<><HasteIcon stat={this.selectedCombatant.spec.primaryStat} /> {formatNumber(this.minorBuffUptime * this.hasteBuff)} <small>average Haste gained</small><br /></>)}
           </div>
-        </ItemStatistic>
+        </div>
+      </ItemStatistic>
     );
   }
 }
