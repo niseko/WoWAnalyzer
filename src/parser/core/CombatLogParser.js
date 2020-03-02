@@ -177,7 +177,7 @@ import VoidTwistedTitanshard from '../shared/modules/items/bfa/raids/nyalothathe
 import TitanicEmpowerment from '../shared/modules/items/bfa/raids/nyalothathewakingcity/TitanicEmpowerment';
 import ForbiddenObsidianClaw from '../shared/modules/items/bfa/raids/nyalothathewakingcity/ForbiddenObsidianClaw';
 import HummingBlackDragonscale from '../shared/modules/items/bfa/raids/nyalothathewakingcity/HummingBlackDragonscale';
-//Corruptions
+// Corruptions
 import IneffableTruth from '../shared/modules/spells/bfa/corruptions/IneffableTruth';
 import HonedMind from '../shared/modules/spells/bfa/corruptions/HonedMind';
 import SurgingVitality from '../shared/modules/spells/bfa/corruptions/SurgingVitality';
@@ -186,6 +186,9 @@ import DeadlyMomentum from '../shared/modules/spells/bfa/corruptions/DeadlyMomen
 import VoidRitual from '../shared/modules/spells/bfa/corruptions/VoidRitual';
 import Siphoner from '../shared/modules/spells/bfa/corruptions/Siphoner';
 import FlashOfInsight from '../shared/modules/spells/bfa/corruptions/FlashOfInsight';
+
+// Legendaries
+import Ashjrakamas from '../shared/modules/items/bfa/Ashjrakamas';
 
 import ParseResults from './ParseResults';
 import EventsNormalizer from './EventsNormalizer';
@@ -381,14 +384,14 @@ class CombatLogParser {
     bloodthirstyUrchin: BloodthirstyUrchin,
     dribblingInkpod: DribblingInkpod,
 
-    //Nyalotha The Waking City
+    // Nyalotha The Waking City
     vitaChargedTitanshard: VitaChargedTitanshard,
     voidTwistedTitanshard: VoidTwistedTitanshard,
     titanicEmpowerment: TitanicEmpowerment,
     forbiddenObsidianClaw: ForbiddenObsidianClaw,
     hummingBlackDragonscale: HummingBlackDragonscale,
 
-    //Corruptions
+    // Corruptions
     ineffableTruth: IneffableTruth,
     honedMind: HonedMind,
     surgingVitality: SurgingVitality,
@@ -397,6 +400,9 @@ class CombatLogParser {
     voidRitual: VoidRitual,
     siphoner: Siphoner,
     flashOfInsight: FlashOfInsight,
+
+    // Legendaries
+    ashjrakamas: Ashjrakamas,
   };
   // Override this with spec specific modules when extending
   static specModules = {};
