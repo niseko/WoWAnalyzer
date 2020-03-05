@@ -653,7 +653,7 @@ class StatTracker extends Analyzer {
   on_toPlayer_heal(event) {
     this._updateIntellect(event);
   }
-  _count = 0;
+
   _updateIntellect(event) {
     // updates intellect values directly from game events
     if (!event.spellPower) {

@@ -147,13 +147,14 @@ class WorldveinResonance extends Analyzer {
             <UptimeIcon /> {formatPercentage(this.anyShardsUptimeFraction)}% <small>at least 1 shard uptime</small><br />
             <UptimeIcon /> {formatPercentage(this.maxShardsUptimeFraction)}% <small>{MAX_SHARDS} shard uptime</small><br />
             <PrimaryStatIcon stat={primaryStat} /> {formatNumber(this.averageStat)} <small> minor average {primaryStat} gained</small><br />
-            {this._hasMajor && (
-              <><PrimaryStatIcon stat={primaryStat} /> {formatNumber(this.averageStat)} <small> major average {primaryStat} gained</small></>
-            )}
           </div>
         </div>
       </ItemStatistic>
     );
+    // TODO
+    //{this._hasMajor && (
+    //  <><PrimaryStatIcon stat={primaryStat} /> {formatNumber(this.averageStat)} <small> major average {primaryStat} gained</small></>
+    //)}
   }
 }
 
