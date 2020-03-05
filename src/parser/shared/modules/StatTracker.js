@@ -403,22 +403,27 @@ class StatTracker extends Analyzer {
   }
 
   addStatMultiplier(stat, mult, changeCurrentStats = false) {
-    debug && this.log(`addStatMultiplier before ${this.statMultiplier[stat]} - ${this._currentStats[stat]} - ${mult}`);
+    const before = this.statMultiplier[stat];
     this.statMultiplier[stat] *= mult;
+
+    debug && console.log(`StatTracker: ${stat} multiplier change (${before.toFixed(2)} -> ${this.statMultiplier[stat].toFixed(2)}) @ ${formatMilliseconds(this.owner.fightDuration)}`);
+
     if (changeCurrentStats) {
       const delta = Math.round(this._currentStats[stat] * mult - this._currentStats[stat]);
-      this.forceChangeStats({ [stat]: delta}, null, true);
+      this.forceChangeStats({ [stat]: delta }, null, true);
     }
-    debug && this.log(`after ${this.statMultiplier[stat]} - ${this._currentStats[stat]}`);
   }
+
   removeStatMultiplier(stat, mult, changeCurrentStats = false) {
-    debug && this.log(`removeStatMultiplier before ${this.statMultiplier[stat]} - ${this._currentStats[stat]}`);
+    const before = this.statMultiplier[stat];
     this.statMultiplier[stat] /= mult;
+
+    debug && console.log(`StatTracker: ${stat} multiplier change (${before.toFixed(2)} -> ${this.statMultiplier[stat].toFixed(2)}) @ ${formatMilliseconds(this.owner.fightDuration)}`);
+
     if (changeCurrentStats) {
       const delta = Math.round(this._currentStats[stat] / mult - this._currentStats[stat]);
-      this.forceChangeStats({ [stat]: delta}, null, true);
+      this.forceChangeStats({ [stat]: delta }, null, true);
     }
-    debug && this.log(`after ${this.statMultiplier[stat]} - ${this._currentStats[stat]}`);
   }
 
   applySpecModifiers() {
@@ -725,10 +730,6 @@ class StatTracker extends Analyzer {
           this.removeStatMultiplier(stat, statMult[stat], true);
         }
       }
-
-      debug && console.log(`StatTracker: (${event.oldStacks} -> ${event.newStacks}) ${SPELLS[spellId] ? SPELLS[spellId].name : spellId} @ ${formatMilliseconds(this.owner.fightDuration)}`);
-      debug && this._debugPrintStats(this._currentStats);
-      //this._triggerChangeStats(event, before, delta, after);
     }
   }
 

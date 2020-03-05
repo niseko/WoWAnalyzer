@@ -13,7 +13,7 @@ import PrimaryStatIcon from 'interface/icons/PrimaryStat';
 import { STATISTIC_CATEGORY } from 'interface/others/StatisticBox';
 import BoringItemValueText from 'interface/statistics/components/BoringItemValueText';
 
-// https://www.warcraftlogs.com/reports/tq3D9ajfr24nbHFX#fight=3&type=auras&source=18&view=events 
+// https://www.warcraftlogs.com/reports/tq3D9ajfr24nbHFX#fight=3&type=auras&source=18&view=events
 
 class FlashOfInsight extends Analyzer {
   static dependencies = {
@@ -24,8 +24,7 @@ class FlashOfInsight extends Analyzer {
   statAmount: number = 0;
   stack: number = 0;
   timestamp: number = 0;
-  currentGain: number = 0;
-  public historyBySpellId: { [amount: number]: number; } = {};
+  durationPerGain: { [amount: number]: number; } = {};
 
   constructor(options: any) {
     super(options);
@@ -38,23 +37,17 @@ class FlashOfInsight extends Analyzer {
     this.addEventListener(Events.removebuffstack.by(SELECTED_PLAYER).spell(SPELLS.FLASH_OF_INSIGHT_BUFF), this.stackChange);
     this.addEventListener(Events.ChangeStats.by(SELECTED_PLAYER), this.statChange);
     this.addEventListener(Events.fightend, this.onFightEnd);
+    this.timestamp = this.owner.fight.start_time;
   }
 
   stackChange(event: ApplyBuffStackEvent | RemoveBuffStackEvent) {
-    this.log(this.stack);
     if (this.stack === 0) {
       this.statTracker.addStatMultiplier("intellect", (1 + event.stack / 100), false);
       this.stack = event.stack;
-      this.timestamp = event.timestamp;
       return;
     }
 
-    const duration = event.timestamp - this.timestamp;
-    const amount = (this.statTracker.currentIntellectRating - this.statTracker.currentIntellectRating / (1 + (this.stack / 100)));
-    if (!this.historyBySpellId[amount]) {
-      this.historyBySpellId[amount] = 0;
-    }
-    this.historyBySpellId[amount] += duration;
+    this.valueChange(event);
 
     this.statTracker.removeStatMultiplier("intellect", (1 + (this.stack / 100)), true);
     this.statTracker.addStatMultiplier("intellect", (1 + (event.stack / 100)), true);
@@ -68,35 +61,29 @@ class FlashOfInsight extends Analyzer {
       return;
     }
 
-    const duration = event.timestamp - this.timestamp;
-    if (!duration) {
-      return;
-    }
-    const amount = (this.statTracker.currentIntellectRating - this.statTracker.currentIntellectRating / (1 + (this.stack / 100)));
-    if (!this.historyBySpellId[amount]) {
-      this.historyBySpellId[amount] = 0;
-    }
-    this.historyBySpellId[amount] += duration;
+    this.valueChange(event);
 
     this.timestamp = event.timestamp;
   }
 
   onFightEnd(event: FightEndEvent) {
+    this.valueChange(event);
+  }
+
+  valueChange(event: ApplyBuffStackEvent | RemoveBuffStackEvent | ChangeStatsEvent | FightEndEvent) {
     const duration = event.timestamp - this.timestamp;
     if (!duration) {
       return;
     }
     const amount = (this.statTracker.currentIntellectRating - this.statTracker.currentIntellectRating / (1 + (this.stack / 100)));
-    if (!this.historyBySpellId[amount]) {
-      this.historyBySpellId[amount] = 0;
+    if (!this.durationPerGain[amount]) {
+      this.durationPerGain[amount] = 0;
     }
-    this.historyBySpellId[amount] += duration;
+    this.durationPerGain[amount] += duration;
   }
 
   get avgGain() {
-    return Object.entries(this.historyBySpellId)
-      .filter(ms => ms[1] > 0).reduce((total, amount) => total + Number(amount[0]) * amount[1], 0)
-      / Object.values(this.historyBySpellId).reduce((total, ms) => total + ms);
+    return Object.entries(this.durationPerGain).filter(ms => ms[1] > 0).reduce((total, amount) => total + amount[1] / this.owner.fightDuration * Number(amount[0]), 0);
   }
 
   statistic() {
