@@ -36,7 +36,7 @@ class Severe extends Analyzer {
     this.statMultiplier += this.selectedCombatant.getCorruptionCount(SPELLS.SEVERE_T2.id) * T2_MULTIPLIER;
     this.statMultiplier += this.selectedCombatant.getCorruptionCount(SPELLS.SEVERE_T3.id) * T3_MULTIPLIER;
 
-    options.statTracker.addStatMultiplier("crit", this.statMultiplier);
+    options.statTracker.addStatMultiplier({ crit: this.statMultiplier });
 
     this.addEventListener(Events.ChangeStats.by(SELECTED_PLAYER), this.statChange);
     this.addEventListener(Events.fightend, this.onFightEnd);
@@ -69,7 +69,7 @@ class Severe extends Analyzer {
   }
 
   get avgGain() {
-    return Object.entries(this.durationPerGain).filter(ms => ms[1] > 0).reduce((total, amount) => total + amount[1] / this.owner.fightDuration * Number(amount[0]), 0);
+    return Object.entries(this.durationPerGain).filter(ms => ms[1] > 0).reduce((total, [amount, duration]) => total + duration / this.owner.fightDuration * Number(amount), 0);
   }
 
   statistic() {

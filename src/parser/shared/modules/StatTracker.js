@@ -312,10 +312,10 @@ class StatTracker extends Analyzer {
 
     // region Racials
     // Mag'har Orc
-    [SPELLS.RICTUS_OF_THE_LAUGHING_SKULL.id]: { crit: 102 }, // 411 stats at level 120
-    [SPELLS.ZEAL_OF_THE_BURNING_BLADE.id]: { haste: 102 },
-    [SPELLS.FEROCITY_OF_THE_FROSTWOLF.id]: { mastery: 102 },
-    [SPELLS.MIGHT_OF_THE_BLACKROCK.id]: { versatility: 102 },
+    [SPELLS.RICTUS_OF_THE_LAUGHING_SKULL.id]: { crit: 411 },
+    [SPELLS.ZEAL_OF_THE_BURNING_BLADE.id]: { haste: 411 },
+    [SPELLS.FEROCITY_OF_THE_FROSTWOLF.id]: { mastery: 411 },
+    [SPELLS.MIGHT_OF_THE_BLACKROCK.id]: { versatility: 411 },
     // endregion
   };
 
@@ -373,7 +373,7 @@ class StatTracker extends Analyzer {
       ...this._pullStats,
     };
 
-    this.addStatMultiplier("intellect", 1 + ARMOR_INT_BONUS); // Really hoping people don't run around with wrong armor types
+    this.addStatMultiplier({ intellect: 1 + ARMOR_INT_BONUS }); // Really hoping people don't run around with wrong armor types
 
     debug && this._debugPrintStats(this._currentStats);
   }
@@ -402,28 +402,36 @@ class StatTracker extends Analyzer {
     this.statBuffs[buffId] = stats;
   }
 
-  addStatMultiplier(stat, mult, changeCurrentStats = false) {
-    const before = this.statMultiplier[stat];
-    this.statMultiplier[stat] *= mult;
+  addStatMultiplier(statMult, changeCurrentStats = false) {
+    const delta = {};
+    for (const stat in statMult) {
+      const before = this.statMultiplier[stat];
+      this.statMultiplier[stat] *= statMult[stat];
 
-    debug && console.log(`StatTracker: ${stat} multiplier change (${before.toFixed(2)} -> ${this.statMultiplier[stat].toFixed(2)}) @ ${formatMilliseconds(this.owner.fightDuration)}`);
+      debug && console.log(`StatTracker: ${stat} multiplier change (${before.toFixed(2)} -> ${this.statMultiplier[stat].toFixed(2)}) @ ${formatMilliseconds(this.owner.fightDuration)}`);
 
-    if (changeCurrentStats) {
-      const delta = Math.round(this._currentStats[stat] * mult - this._currentStats[stat]);
-      this.forceChangeStats({ [stat]: delta }, null, true);
+      if (changeCurrentStats) {
+        delta[stat] = Math.round(this._currentStats[stat] * statMult[stat] - this._currentStats[stat]);
+      }
     }
+
+    changeCurrentStats && this.forceChangeStats(delta, null, true);
   }
 
-  removeStatMultiplier(stat, mult, changeCurrentStats = false) {
-    const before = this.statMultiplier[stat];
-    this.statMultiplier[stat] /= mult;
+  removeStatMultiplier(statMult, changeCurrentStats = false) {
+    const delta = {};
+    for (const stat in statMult) {
+      const before = this.statMultiplier[stat];
+      this.statMultiplier[stat] /= statMult[stat];
 
-    debug && console.log(`StatTracker: ${stat} multiplier change (${before.toFixed(2)} -> ${this.statMultiplier[stat].toFixed(2)}) @ ${formatMilliseconds(this.owner.fightDuration)}`);
+      debug && console.log(`StatTracker: ${stat} multiplier change (${before.toFixed(2)} -> ${this.statMultiplier[stat].toFixed(2)}) @ ${formatMilliseconds(this.owner.fightDuration)}`);
 
-    if (changeCurrentStats) {
-      const delta = Math.round(this._currentStats[stat] / mult - this._currentStats[stat]);
-      this.forceChangeStats({ [stat]: delta }, null, true);
+      if (changeCurrentStats) {
+        delta[stat] = Math.round(this._currentStats[stat] / statMult[stat] - this._currentStats[stat]);
+      }
     }
+
+    changeCurrentStats && this.forceChangeStats(delta, null, true);
   }
 
   applySpecModifiers() {
@@ -716,19 +724,13 @@ class StatTracker extends Analyzer {
       // we have to check the stacks count because Entities incorrectly copies the prepull property onto changes and removal following the application
       if (event.prepull && event.oldStacks === 0) {
         debug && console.log(`StatTracker prepull application IGNORED for ${SPELLS[spellId] ? SPELLS[spellId].name : spellId}`);
-        for (const stat in statMult) {
-          this.addStatMultiplier(stat, statMult[stat]);
-        }
+        this.addStatMultiplier(statMult);
         return;
       }
       if (event.newStacks > event.oldStacks) {
-        for (const stat in statMult) {
-          this.addStatMultiplier(stat, statMult[stat], true);
-        }
+        this.addStatMultiplier(statMult, true);
       } else if (event.newStacks < event.oldStacks) {
-        for (const stat in statMult) {
-          this.removeStatMultiplier(stat, statMult[stat], true);
-        }
+        this.removeStatMultiplier(statMult, true);
       }
     }
   }

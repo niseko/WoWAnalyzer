@@ -42,15 +42,15 @@ class FlashOfInsight extends Analyzer {
 
   stackChange(event: ApplyBuffStackEvent | RemoveBuffStackEvent) {
     if (this.stack === 0) {
-      this.statTracker.addStatMultiplier("intellect", (1 + event.stack / 100), false);
+      this.statTracker.addStatMultiplier({ intellect: (1 + event.stack / 100) }, false);
       this.stack = event.stack;
       return;
     }
 
     this.valueChange(event);
 
-    this.statTracker.removeStatMultiplier("intellect", (1 + (this.stack / 100)), true);
-    this.statTracker.addStatMultiplier("intellect", (1 + (event.stack / 100)), true);
+    this.statTracker.removeStatMultiplier({ intellect: (1 + (this.stack / 100)) }, true);
+    this.statTracker.addStatMultiplier({ intellect: (1 + (event.stack / 100)) }, true);
 
     this.timestamp = event.timestamp;
     this.stack = event.stack;
@@ -83,7 +83,7 @@ class FlashOfInsight extends Analyzer {
   }
 
   get avgGain() {
-    return Object.entries(this.durationPerGain).filter(ms => ms[1] > 0).reduce((total, amount) => total + amount[1] / this.owner.fightDuration * Number(amount[0]), 0);
+    return Object.entries(this.durationPerGain).filter(ms => ms[1] > 0).reduce((total, [amount, duration]) => total + duration / this.owner.fightDuration * Number(amount), 0);
   }
 
   statistic() {
