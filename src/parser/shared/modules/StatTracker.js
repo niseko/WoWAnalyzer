@@ -402,32 +402,32 @@ class StatTracker extends Analyzer {
     this.statBuffs[buffId] = stats;
   }
 
-  addStatMultiplier(statMult, changeCurrentStats = false) {
+  addStatMultiplier(stats, changeCurrentStats = false) {
     const delta = {};
-    for (const stat in statMult) {
+    for (const stat in stats) {
       const before = this.statMultiplier[stat];
-      this.statMultiplier[stat] *= statMult[stat];
+      this.statMultiplier[stat] *= stats[stat];
 
       debug && console.log(`StatTracker: ${stat} multiplier change (${before.toFixed(2)} -> ${this.statMultiplier[stat].toFixed(2)}) @ ${formatMilliseconds(this.owner.fightDuration)}`);
 
       if (changeCurrentStats) {
-        delta[stat] = Math.round(this._currentStats[stat] * statMult[stat] - this._currentStats[stat]);
+        delta[stat] = Math.round(this._currentStats[stat] * stats[stat] - this._currentStats[stat]);
       }
     }
 
     changeCurrentStats && this.forceChangeStats(delta, null, true);
   }
 
-  removeStatMultiplier(statMult, changeCurrentStats = false) {
+  removeStatMultiplier(stats, changeCurrentStats = false) {
     const delta = {};
-    for (const stat in statMult) {
+    for (const stat in stats) {
       const before = this.statMultiplier[stat];
-      this.statMultiplier[stat] /= statMult[stat];
+      this.statMultiplier[stat] /= stats[stat];
 
       debug && console.log(`StatTracker: ${stat} multiplier change (${before.toFixed(2)} -> ${this.statMultiplier[stat].toFixed(2)}) @ ${formatMilliseconds(this.owner.fightDuration)}`);
 
       if (changeCurrentStats) {
-        delta[stat] = Math.round(this._currentStats[stat] / statMult[stat] - this._currentStats[stat]);
+        delta[stat] = Math.round(this._currentStats[stat] / stats[stat] - this._currentStats[stat]);
       }
     }
 
