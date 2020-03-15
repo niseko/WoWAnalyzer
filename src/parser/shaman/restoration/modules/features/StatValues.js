@@ -7,6 +7,7 @@ import STAT from 'parser/shared/modules/features/STAT';
 import StatTracker from 'parser/shared/modules/StatTracker';
 import HealingValue from 'parser/shared/modules/HealingValue';
 import CritEffectBonus from 'parser/shared/modules/helpers/CritEffectBonus';
+import Combatants from 'parser/shared/modules/Combatants';
 
 import SPELL_INFO from './StatValuesSpellInfo';
 import MasteryEffectiveness from './MasteryEffectiveness';
@@ -22,10 +23,26 @@ class StatValues extends BaseHealerStatValues {
     statTracker: StatTracker,
     critEffectBonus: CritEffectBonus,
     masteryEffectiveness: MasteryEffectiveness,
+    combatants: Combatants,
   };
 
   spellInfo = SPELL_INFO;
   qeLive = true;
+
+  on_heal(event) {
+    if(!this.combatants.getEntity(event)) {
+      return;
+    }
+    super.on_heal(event);
+  }
+
+  on_absorbed(event) {
+    if(!this.combatants.getEntity(event)) {
+      return;
+    }
+    super.on_absorbed(event);
+  }
+
 
   on_feed_heal(event) {
     const spellInfo = this._getSpellInfo(event);

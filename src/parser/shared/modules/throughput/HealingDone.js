@@ -36,6 +36,7 @@ class HealingDone extends Analyzer {
   }
 
   on_heal(event) {
+    
     if (this.owner.byPlayer(event) || this.owner.byPlayerPet(event)) {
       this._addHealing(event, event.amount, event.absorbed, event.overheal);
     }

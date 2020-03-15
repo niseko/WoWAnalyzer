@@ -17,6 +17,7 @@ import Events from 'parser/core/Events';
 import Abilities from 'parser/core/modules/Abilities';
 import Buffs from 'parser/core/modules/Buffs';
 import StatTracker from 'parser/shared/modules/StatTracker';
+import Combatants from 'parser/shared/modules/Combatants';
 
 const HTT_DURATION = 10500;
 const HTT_BASE_COOLDOWN = 180000;
@@ -26,6 +27,7 @@ class VisionOfPerfection extends Analyzer {
     abilities: Abilities,
     statTracker: StatTracker,
     buffs: Buffs,
+    combatants: Combatants,
   };
   majorHealing = 0;
   majorHaste = 0;
@@ -76,6 +78,9 @@ class VisionOfPerfection extends Analyzer {
   }
 
   _HTTheal(event) {
+    if(!this.combatants.getEntity(event)) {
+      return;
+    }
     if (event.timestamp < this.castTimestamp + HTT_DURATION) {
       return;
     }
