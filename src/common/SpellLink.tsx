@@ -26,16 +26,19 @@ const SpellLink = React.forwardRef<HTMLAnchorElement, Props>(({
   }
 
   return (
+    <>
+    {icon && <><SpellIcon id={id} noLink style={iconStyle} alt="" /> </>}
     <a
       href={TooltipProvider.spell(id, ilvl ? { ilvl } : undefined)}
       target="_blank"
       rel="noopener noreferrer"
       ref={ref}
+      data-wh-rename-link={icon}
       {...other}
     >
-      {icon && <><SpellIcon id={id} noLink style={iconStyle} alt="" /> </>}
       {children || (SPELLS[id] ? SPELLS[id].name : `Unknown spell: ${id}`)}
     </a>
+    </>
   );
 });
 

@@ -97,7 +97,7 @@ class CastBehavior extends Analyzer {
   statistic() {
     return (
       <StatisticGroup category={STATISTIC_CATEGORY.GENERAL} large={false} wide={false} style>
-        <Statistic ultrawide>
+        <Statistic ultrawide size="flexible">
           <div className="pad">
             <label><SpellLink id={SPELLS.TIDAL_WAVES_BUFF.id} /> usage</label>
             {this.twUsageRatioChart}

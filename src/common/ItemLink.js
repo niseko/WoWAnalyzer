@@ -26,6 +26,11 @@ class ItemLink extends React.PureComponent {
   }
   componentDidUpdate() {
     TooltipProvider.refresh(this.elem);
+    // eslint-disable-next-line no-undef
+    if ($WowheadPower !== "undefined") {
+      // eslint-disable-next-line no-undef
+      $WowheadPower.refreshLinks()
+    }
   }
 
   render() {
@@ -51,6 +56,7 @@ class ItemLink extends React.PureComponent {
         target="_blank"
         rel="noopener noreferrer"
         className={getItemQualityLabel(quality)}
+        data-wh-rename-link="false"
         ref={elem => {
           this.elem = elem;
         }}
